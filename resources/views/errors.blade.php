@@ -2,7 +2,7 @@
   <div class="form-group alert alert-danger">
   <ul>
     @foreach($errors->all() as $error)
-    <li>{{$error}} </li>
+    <li class="red-text darken-2"><b>{{$error}} </b></li>
     @endforeach
     </ul>
   </div>

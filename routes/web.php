@@ -7,6 +7,9 @@ Route::get('/', function () {
 Route::get('/dash',function(){
   return view('dashboard');
 });
+Route::post('/dash/store','AuthController@storePlan');
+
+
 Route::get('/projects',function(){
   return view('projects');
 });

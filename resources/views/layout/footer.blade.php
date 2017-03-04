@@ -32,7 +32,7 @@
                   <input id="password_confirmation"  name="password_confirmation" type="password" class="validate" required>
                   <label for="password_confirmation" name="password_confirmation">Password Confirmation</label>
                 </div>
-                <button class="btn right" type="submit">Sign up</button>
+                <button class="btn  waves-effect waves-light yellow darken-2 z-depth-3 right" type="submit"><span style="color:#121212;">Sign up</span> </button>
               </div>
               @include('errors')
             </form>

@@ -2,10 +2,13 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title></title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Dashboard</title>
     <link href="https://fonts.googleapis.com/css?family=Montserrat|Roboto+Slab" rel="stylesheet">
     <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="/css/materialize.min.css">
+    <script type="text/javascript" src="/js/jquery-2.1.1.min.js"></script>
+    <script  src="/js/materialize.js"></script>
     <style type="text/css">
       body{
         background-color: #f8f8f8!important;
@@ -17,7 +20,7 @@
       #slide-out li a,#slide-out li a i  {
         color: #76838f!important;
       }
-      #slide-out  li a:hover,#slide-out .active  a  {
+      #slide-out .list-items li a:hover,#slide-out .active  a  {
         color: #fff!important;
         background: #2A363B!important;
         
@@ -33,7 +36,7 @@
 <div class="row">
 
 
-<ul id="slide-out" class="side-nav  fixed">
+<ul id="slide-out" class="side-nav fixed">
     <li>
       <div class="userView">
         <div class="background">
@@ -44,15 +47,15 @@
         <a href="#!email"><span class="white-text email">{{ Auth::user()->email}} </span></a>
       </div>
     </li>
-    
-    <li class="active"><a href="/"  ><i class="material-icons">home</i>Home</a></li>
+    <div class="list-items">
+    <li class="active"><a href="/"  ><i class="material-icons" >home</i>Home</a></li>
 
     <li><a href="#!"><i class="material-icons">add</i>New Project</a></li>
    <!--  <li><div class="divider"></div></li>
     <li><a class="subheader">My Account</a></li> -->
     <li><a class="waves-effect" href="/projects"><i class="material-icons">room</i>Latest Projects</a></li>
     <li>
-          <a href="/pro" ><span class="badge teal-text text-darken-2">10</span>My Projects</a>
+          <a href="/pro" ><i class="material-icons">work</i><span class="badge white-text text-darken-4">10</span>My Projects</a>
     </li>
     <li>
         <a class="waves-effect" href="#!"><i class="material-icons">settings</i>Profile Settings</a>
@@ -70,11 +73,11 @@
     </li>
       
     </li> -->
-    
+    </div>
   </ul>
-  <!-- <a href="#" data-activates="slide-out" class="btn button-collapse"><i class="material-icons">menu</i></a> -->
+  <!-- <a href="#" data-activates="slide-out" class="btn button-collapse"><i class="material-icons">menu</i></a> 
 
-
+ -->
 
 <div class=" " style="margin-left:350px;margin-right:50px;">
 
@@ -84,10 +87,26 @@
 
 </div>
 </div>
-    <script type="text/javascript" src="/js/jquery-2.1.1.min.js"></script>
-    <script  src="/js/materialize.js"></script>
+    
     <script>
-    $('.button-collapse').sideNav();
+
+    
+    $('#slide-out li').mouseover(function(){
+      $(this).find('i').attr("style","color:#fff!important;");
+      
+          });
+    $('#slide-out li').mouseleave(function(){
+      
+      if(!$(this).hasClass('active')){
+
+      $(this).find('i').attr("style","color:##76838f!important;");
+
+      }
+      });
+    $('li.active').find('i').attr("style","color:#fff!important;");
+    
+    
+
      /*$('#slide-out li').hover(function(){
 
       $(this).find('i').css('color','red');

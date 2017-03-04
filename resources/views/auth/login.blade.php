@@ -26,7 +26,7 @@
    <center>
      
    	<div class="section"></div>
-     <h5 class="indigo-text">login into your account</h5>
+     <h3 class="pink-text"><b>Sign in to your account</b></h3>
      <div class="section"></div>
 
      <div class="container ">
@@ -60,7 +60,7 @@
            <br />
            <center>
              <div class='row'>
-               <button type="submit" class="btn btn-large waves-effect waves-light yellow darken-2 z-depth-3"><span style="color:#121212;">Login</span></button>
+               <button type="submit" class="btn-large waves-effect waves-light yellow darken-2 z-depth-3"><span style="color:#121212;">Login</span></button>
              </div>
            </center>
          </form>
