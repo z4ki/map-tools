@@ -8,7 +8,8 @@ use App\Plan;
 
 class AuthController extends Controller
 {
-    //
+    // 
+    
     public function create(){
   		return view('auth.login');
 	}
@@ -60,10 +61,13 @@ class AuthController extends Controller
 	}
 
 public function storePlan(Request $request){
+	
+
 	if($request->ajax()){
 			 $data =  $request->all();
 
 			Plan::create([
+				'project_id' => 2,
 				'user_id' => auth()->id(),
 				'plan' => json_encode($data)
 				]);
@@ -71,22 +75,41 @@ public function storePlan(Request $request){
 		return response()->json($data);
 		
 	}
-	/*return response()->json(['message' => $request]);*/
-	/*if($request->ajax()){
 
-		$msg = $request->msg;
-		dd($msg);
-	}else{
-		dd("Message and die");
-	}*/
-	/*if($request->isMethod('post')){*/
-
-/*
-		return "received!!Well";*/
-		/*return redirect('/dash/plan',compact(request()->all()));*/
-	/*}*/
-	
 }
+public function showProjects(Request $request){
+	
+
+
+	if($request->ajax()){
+	$plans = Plan::all();
+	
+	
+	/*dd($plans->plan);*/
+	/*return view('projects',compact('plans'));*/
+	return response()->json($plans);
+		
+	}
+}
+
+
+public function showMap($id,Request $request){
+
+	
+	$plan = Plan::where("id", $id)->get();
+
+	if($request->ajax()){
+		return response()->json($plan);
+
+
+	}else{
+
+		return view('dashboard');
+		
+	}
+			
+}
+
 
 
 }

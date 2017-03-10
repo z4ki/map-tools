@@ -48,16 +48,16 @@
       </div>
     </li>
     <div class="list-items">
-    <li class="active"><a href="/"  ><i class="material-icons" >home</i>Home</a></li>
+    <li id="home" class="active"><a href="/"  ><i class="material-icons" >home</i>Home</a></li>
 
-    <li><a href="#!"><i class="material-icons">add</i>New Project</a></li>
+    <li id="new-project"><a href="#!"><i class="material-icons">add</i>New Project</a></li>
    <!--  <li><div class="divider"></div></li>
     <li><a class="subheader">My Account</a></li> -->
-    <li><a class="waves-effect" href="/projects"><i class="material-icons">room</i>Latest Projects</a></li>
-    <li>
+    <li id="latest-projects"><a class="waves-effect" href="/projects"><i class="material-icons">room</i>Latest Projects</a></li>
+    <li id="my-projects">
           <a href="/pro" ><i class="material-icons">work</i><span class="badge white-text text-darken-4">10</span>My Projects</a>
     </li>
-    <li>
+    <li id="settings">
         <a class="waves-effect" href="#!"><i class="material-icons">settings</i>Profile Settings</a>
 
     </li>

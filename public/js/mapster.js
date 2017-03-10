@@ -319,7 +319,7 @@ function toggleMenuOn(){
 
           var distance = 0 ,area = 0;
           google.maps.event.addListener(drawingManager, 'polygoncomplete', function(polygon) {
-            console.log(polygon.getPath());
+            /*console.log(polygon.getPath());*/
             area = google.maps.geometry.spherical.computeArea(polygon.getPath());
             console.log("Area"+ area);
             
@@ -340,7 +340,7 @@ function toggleMenuOn(){
           
           google.maps.event.addListener(drawingManager,'overlaycomplete', function(event){
             if(event.type==='circle'){
-              
+              console.log("Circle:" ,event);
               CIRCLES.push(
                           {
                               "type":event.type,
@@ -349,15 +349,33 @@ function toggleMenuOn(){
                               "fillColor":event.overlay.fillColor,
                               "fillOpacity":event.overlay.fillOpacity,
                               "strokeWeight":event.overlay.strokeWeight,
-                              "radius":event.overlay.radius
+                              "radius":event.overlay.radius,
+                              "zIndex":event.overlay.zIndex
                             }
                           );
               
               console.log("JSON",CIRCLES);
-
-
             }else if(event.type==='polygon'){
-              /*console.log(event.latLngs);*/
+              console.log("Polygon:" ,event);
+
+                var obj = [];
+
+              for(var i =0;i<event.overlay.getPath().length;i++){
+                obj.push( event.overlay.getPath().getArray()[i].lat());
+                obj.push( event.overlay.getPath().getArray()[i].lng());
+                
+              }
+              POLYGONS.push({
+                "type":event.type,
+                "fillOpacity":event.overlay.fillOpacity,
+                "fillColor":event.overlay.fillColor,
+                "strokeWeight":event.overlay.strokeWeight,
+                "length":event.overlay.getPath().length,
+                "latLngs":obj,
+                "zIndex":event.overlay.zIndex
+              });
+             
+              
             }
           });
           /*google.maps.event.addListener(drawingManager,'circlecomplete',function(circle){
@@ -375,7 +393,8 @@ function toggleMenuOn(){
             dataType:'json',
             url:'/dash/store',
             data:{
-                CIRCLES
+                "circles":CIRCLES,
+                "polygons":POLYGONS
             },
 
             success:function(data){
@@ -406,6 +425,89 @@ function toggleMenuOn(){
             );
          });*/
 
+         if(window.location.pathname !=='/dash'){
+           /*var data  = $("#data").val();
+           var json = JSON.parse(data);
+           console.log(json[0]);*/
+
+         $(document).ready(function(){
+            
+          $.get(window.location.pathname,function(data){
+            /*$(".active").removeClass('active');
+            $("my-projects").addClass('active');*/
+            console.log("received data:", data);
+            var json = JSON.parse(data[0].plan);
+            console.log(json);
+            /*var circle  = json.circles["0"];*/
+
+            var arr =[];
+            /*$.map(json, function(el,index){
+              arr.push(json);
+            });*/
+            arr = $.makeArray(json.circles);
+            console.log(arr);
+            
+
+            /* Converting to array*/
+            var circle = $.makeArray(json.circles);
+            var polygon = $.makeArray(json.polygons);
+            console.log(circle);
+            console.log(polygon);
+
+              
+              var c;
+
+            for(var i=0;i<circle.length;i++){
+
+              
+               c = circle[i];
+              var newCircle = new google.maps.Circle({
+              fillColor:c.fillColor,
+              fillOpacity:c.fillOpacity,
+              center:{lat:parseFloat(c.centerLat) , lng:parseFloat(c.centerLng)},
+              strokeWeight:c.strokeWeight,
+              radius:parseFloat(c.radius),
+              zIndex:c.zIndex,
+              map:map
+
+            });
 
 
+            }
+
+            
+
+            /* path variable for polygon coordinates */
+            for(var i=0;i<polygon.length;i++ ){
+            var path = [];
+
+              var p = polygon[i];
+              console.log(p);
+              
+
+            for(var j=0;j<p.length *2;j+=2 ){
+               path.push(
+              { 
+                lat:parseFloat(p.latLngs[j]),
+                lng:parseFloat(p.latLngs[j+1])
+              }
+              );
+            }
+            console.log(path);
+
+            var newPolygon = new google.maps.Polygon({
+              fillColor:p.fillColor,
+              fillOpacity:p.fillOpacity,
+              strokeWeight:p.strokeWeight,
+              map:map,
+              draggable:true,
+              zIndex:p.zIndex,
+              path:path
+            });
+            }
+          }); // $.get
+
+         }); // document ready 
+
+         }
       }

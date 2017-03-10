@@ -41,22 +41,7 @@
       padding: 0 5px!important;
       /*color:#000!important;*/
     }
-    /*
-    .collection-item {
-      border-bottom: hidden!important;*/
-      /*padding-top :5px!important;;
-      padding-bottom: 0px!important;
-    }
-    ul:last-child {
-      padding-bottom: 5px!important;
-    }*/
-      /* Always set the map height explicitly to define the size of the div
-       * element that contains the map. */
-      /*.map {
-        border: solid red 3px;
-        width: 850px;
-        height : 450px;
-      }*/
+    
     </style>
 		<div class="section">
     <nav id="searchbar" class="col m8">
@@ -121,7 +106,7 @@
           
       </ul>
 
-
+      
 
       <script type="text/javascript" src="/js/mapster.js"></script>
       <script 

@@ -1,3 +1,4 @@
+
 <?php
 
 
@@ -11,8 +12,13 @@ Route::post('/dash/store','AuthController@storePlan');
 
 
 Route::get('/projects',function(){
-  return view('projects');
+	return view('projects');
 });
+Route::get('/projects/show','AuthController@showProjects');
+
+Route::get('/projects/show/{id}','AuthController@showMap');
+
+
 
 Route::get('/login','AuthController@create');
 
