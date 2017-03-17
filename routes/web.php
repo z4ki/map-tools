@@ -7,7 +7,7 @@ Route::get('/', function () {
 });
 Route::get('/dash',function(){
   return view('dashboard');
-});
+})->middleware('auth');
 Route::post('/dash/store','AuthController@storePlan');
 
 
@@ -20,7 +20,7 @@ Route::get('/projects/show/{id}','AuthController@showMap');
 
 
 
-Route::get('/login','AuthController@create');
+Route::get('/login','AuthController@create')->name('login');
 
 Route::get('/register',function(){
   return view('auth.register');

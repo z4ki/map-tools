@@ -10,26 +10,38 @@ $.ajaxSetup({
 
 
 var CIRCLES = [],
-POLYGONS = [],
-RECTANGLES =[],
-POLYLINES = []; 
+    POLYGONS = [],
+    RECTANGLES =[],
+    SHAPES = [],
+    POLYLINES = []; 
+
+
+var fillColor;
 
 
 
 $(document).ready(function(){
   toggleMenuOff();
 
+  $("#saved-panel").hide();
   $("#context-menu").hide();
   $("#results").hide();
-})
+
+
+
+});
   var menu = document.querySelector("#context-menu");
   var menuState = 0;
   var active = "context-menu--active";
  
   clickListener();
   keyboardListener();
-  $("#results").hide();
-
+/*$('.color').on("click",function(){
+                  fillColor = $(this).attr("id");
+                   
+                  console.log(fillColor);
+                  
+              });*/
 
   
   
@@ -54,7 +66,7 @@ $(document).ready(function(){
 function toggleMenuOn(){
     if(menuState !==1) {
       menuState = 1;
-      /*menu.classList.add(active);*/
+      
        $("#context-menu").fadeIn(600);
       
     }
@@ -69,7 +81,7 @@ function toggleMenuOn(){
     }
   }
   function getPosition(e){
-    console.log("map position",e);
+    
     var posx = 0 + e.pixel.x;
     var posy = 0 +e.pixel.y;
     
@@ -99,11 +111,11 @@ function toggleMenuOn(){
       // deal with browser quirks with body/window/document and page scroll
       var xScroll = el.scrollLeft || document.documentElement.scrollLeft;
       var yScroll = el.scrollTop || document.documentElement.scrollTop;
-      console.log("body");
+      
       xPos += (el.offsetLeft - xScroll + el.clientLeft);
       yPos += (el.offsetTop - yScroll + el.clientTop);
     } else {
-      console.log("map");
+      
 
       // for all other non-BODY elements
       xPos += (el.offsetLeft - el.scrollLeft + el.clientLeft);
@@ -131,7 +143,7 @@ function toggleMenuOn(){
     
     menu.style.left = (menuPosition.x + pos.x)+"px";
     menu.style.top = (menuPosition.y + pos.y )+"px";
-    console.log(menuPosition);
+    
   }
 
 
@@ -151,6 +163,25 @@ function toggleMenuOn(){
           zoom: 12,
           disableDefaultUI: true,
           fullscreenControl:true
+        });
+
+        
+        $('#clear').on('click',function(){
+          for(var i=0;i<SHAPES.length;i++){
+
+          SHAPES[i].setMap(null);
+          }
+        });
+        
+        navigator.geolocation.getCurrentPosition(function(position){
+          var latLngs = {
+            lat:position.coords.latitude,
+            lng:position.coords.longitude
+          };
+          var infoWindow = new google.maps.InfoWindow({map:map});
+          infoWindow.setPosition(latLngs);
+            infoWindow.setContent('You current location.');
+            map.setCenter(latLngs);
         });
         /**********************************************/
         /**********************************************/
@@ -186,7 +217,8 @@ function toggleMenuOn(){
             $(this).css("font-weight","bold");
             drawingManager.setOptions({
               drawingControlOptions: {
-                drawingModes:[btnID]
+                drawingModes:[btnID],
+
               }
             });
             toggleDrawingManager(drawingManager);
@@ -198,6 +230,9 @@ function toggleMenuOn(){
         toggleButton('circle');
         toggleButton('rectangle');
         toggleButton('polyline');
+
+
+
         
 
 
@@ -236,11 +271,11 @@ function toggleMenuOn(){
         /* Polygon ,Circle ,Rectangle Buttons  */
 
 
-        function CenterControl(controlDiv, map) {
+        function CenterControl(controlDiv, map,id) {
 
         // Set CSS for the control border.
         var controlUI = document.createElement('div');
-        var btnUI = document.getElementById('h-bar');
+        var btnUI = document.getElementById(id);
         btnUI.style.marginBottom = '10px';
         
         controlDiv.appendChild(btnUI);
@@ -259,10 +294,16 @@ function toggleMenuOn(){
         // Create the DIV to hold the control and call the CenterControl()
         // constructor passing in this DIV.
         var centerControlDiv = document.createElement('div');
-        var centerControl = new CenterControl(centerControlDiv, map);
+        var centerControl = new CenterControl(centerControlDiv, map,'h-bar');
 
         centerControlDiv.index = 1;
         map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(centerControlDiv);
+
+       /* var rightControlDiv  = document.createElement('div');
+        var rightControl = new CenterControl(rightControlDiv,map,'v-bar');
+        rightControlDiv.index = 10;
+        map.controls[google.maps.ControlPosition.RIGHT].push(rightControlDiv);*/
+
       
         
         
@@ -275,6 +316,7 @@ function toggleMenuOn(){
             toggleMenuOn();
             /*console.log(e.latLng);*/
           });
+        
         
 
 
@@ -294,12 +336,23 @@ function toggleMenuOn(){
             },
             markerOptions: {icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png'},
           circleOptions: {
-            fillColor: '#ffff00',
-            fillOpacity: 1,
-            strokeWeight: 5,
+            fillOpacity:0.3,
             clickable: false,
             editable: true,
-            zIndex: 1
+            draggable:true
+          },
+          polygonOptions:{
+            fillOpacity:0.3,
+            draggable:true
+          },
+          rectangleOptions:{
+            fillOpacity:0.3,
+            strokeWeight:5,
+            draggable:true
+          },
+          polylineOptions:{
+            fillOpacity:0.3,
+            draggable:true
           }
           });
           
@@ -321,7 +374,7 @@ function toggleMenuOn(){
           google.maps.event.addListener(drawingManager, 'polygoncomplete', function(polygon) {
             /*console.log(polygon.getPath());*/
             area = google.maps.geometry.spherical.computeArea(polygon.getPath());
-            console.log("Area"+ area);
+            
             
             $("#results").prepend("<li class='collection-item'><b>* Area:" + area +" m²</b></li>");
             $("#results").show();
@@ -331,7 +384,7 @@ function toggleMenuOn(){
           google.maps.event.addListener(drawingManager, 'polylinecomplete', function(polyline) {
 
             distance = google.maps.geometry.spherical.computeLength(polyline.getPath());
-            console.log("distance"+ distance);
+            
             
             $("#results").prepend("<li class='collection-item'><b>* Distance: " + distance +" meters</b></li>");
             $("#results").show();
@@ -340,7 +393,8 @@ function toggleMenuOn(){
           
           google.maps.event.addListener(drawingManager,'overlaycomplete', function(event){
             if(event.type==='circle'){
-              console.log("Circle:" ,event);
+              
+              SHAPES.push(event.overlay);
               CIRCLES.push(
                           {
                               "type":event.type,
@@ -354,17 +408,28 @@ function toggleMenuOn(){
                             }
                           );
               
-              console.log("JSON",CIRCLES);
+              
+            }else if(event.type==='rectangle'){
+              console.log("strokeWeight",event.overlay.strokeWeight);
+              console.log("fillColor",event.overlay.fillColor);
+              console.log("fillOpacity",event.overlay.fillOpacity);
+              console.log("strokeOpacity",event.overlay.strokeOpacity);
+              SHAPES.push(event.overlay);
+
             }else if(event.type==='polygon'){
               console.log("Polygon:" ,event);
 
                 var obj = [];
+
+              SHAPES.push(event.overlay);
+
 
               for(var i =0;i<event.overlay.getPath().length;i++){
                 obj.push( event.overlay.getPath().getArray()[i].lat());
                 obj.push( event.overlay.getPath().getArray()[i].lng());
                 
               }
+              console.log(event.overlay.fillColor);
               POLYGONS.push({
                 "type":event.type,
                 "fillOpacity":event.overlay.fillOpacity,
@@ -386,8 +451,14 @@ function toggleMenuOn(){
           var token = $(document).find( 'input[name=_token]' ).val();
          
         $("#map-form").on("submit",function(e){
+
+
           
           e.preventDefault();
+          console.log('retured data from the modal');
+          console.log(projectName);
+          console.log(description);
+
            $.ajax({
             type:'POST',
             dataType:'json',
@@ -399,9 +470,9 @@ function toggleMenuOn(){
 
             success:function(data){
 
-              console.log(data); 
-           /* $("#results").html(data)
-            $("#results").show();*/
+             Materialize.toast('Successfully Saved!', 4000)
+            
+
             },
             error:function(){
             $("#results").prepend("<li class='collection-item'><b>There is an error occured try again.</b></li>");
@@ -424,6 +495,68 @@ function toggleMenuOn(){
             }
             );
          });*/
+
+         /***********************/
+         /** Color palette js **/
+
+         (function(){
+              $("#btn").on('click',function(){
+              $('#v-bar').show();
+              console.log("Hi there color palette");
+            });
+            var palette = [
+              "#f44336",
+              "#e91e63",
+              "#9c27b0",
+              "#2196f3",
+              "#03a9f4",
+              "#009688",
+              "#4caf50",
+              "#cddc39",
+              "#ff5722",
+              "#795548",
+              "#607d8b"
+              ];
+                
+                
+                var i =0;
+              var bar = $('.color');
+              console.log(bar);
+              $(".color").each(function(){
+                  
+                  $(this).css("background-color", palette[i]);
+                  $(this).attr("id",palette[i]);
+
+
+                  $(this).on("click",function(){
+                      fillColor = $(this).attr("id");
+
+                      drawingManager.setOptions({
+                        circleOptions:{
+                          fillOpacity:1,
+                          fillColor:fillColor
+                        },
+                        polygonOptions:{
+                          fillOpacity:1,
+                          fillColor:fillColor
+                        },
+                        polylineOptions:{
+                          fillOpacity:1,
+                          fillColor:fillColor
+                        },
+                        rectangleOptions:{
+                          fillOpacity:1,
+                          fillColor:fillColor
+                        }            
+                      });
+                    
+
+                       
+                      
+                  });
+                  i++;
+              });
+            }());
 
          if(window.location.pathname !=='/dash'){
            /*var data  = $("#data").val();
@@ -468,6 +601,7 @@ function toggleMenuOn(){
               strokeWeight:c.strokeWeight,
               radius:parseFloat(c.radius),
               zIndex:c.zIndex,
+              draggable:true,
               map:map
 
             });
@@ -509,5 +643,8 @@ function toggleMenuOn(){
 
          }); // document ready 
 
+
+
          }
       }
+

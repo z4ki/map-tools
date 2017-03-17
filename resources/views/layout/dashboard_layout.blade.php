@@ -44,7 +44,7 @@
         </div>
         <a href="#!user"><img class="circle" src="/img/google-map.jpg"></a>
         <a href="#!name"><span class="white-text name">{{ Auth::user()->name}}</span></a>
-        <a href="#!email"><span class="white-text email">{{ Auth::user()->email}} </span></a>
+        <a href="#!email"><span class="white-text email" >{{ Auth::user()->email}} <i class="material-icons " style="font-size:14px; color:#fff;">settings</i></span></a>
       </div>
     </li>
     <div class="list-items">
