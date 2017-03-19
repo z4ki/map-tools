@@ -21,131 +21,14 @@ var fillColor;
 
 
 $(document).ready(function(){
-  toggleMenuOff();
+  /*toggleMenuOff();*/
 
   $("#saved-panel").hide();
   $("#context-menu").hide();
   $("#results").hide();
-
-
+  $('.tooltipped').tooltip({delay: 50});
 
 });
-  var menu = document.querySelector("#context-menu");
-  var menuState = 0;
-  var active = "context-menu--active";
- 
-  clickListener();
-  keyboardListener();
-/*$('.color').on("click",function(){
-                  fillColor = $(this).attr("id");
-                   
-                  console.log(fillColor);
-                  
-              });*/
-
-  
-  
-  function clickListener(){
-    document.addEventListener("click", function (e) {
-      var button = e.which || e.button;
-      if(button ===1){
-        /*console.log("click Listener");*/
-        toggleMenuOff();
-      }
-    });
-  }
-
-  function keyboardListener(){
-    window.onkeyup = function (e){
-      if(e.keyCode === 27){
-        toggleMenuOff();
-      }
-    }
-  }
-
-function toggleMenuOn(){
-    if(menuState !==1) {
-      menuState = 1;
-      
-       $("#context-menu").fadeIn(600);
-      
-    }
-  }
-
-  function toggleMenuOff (){
-    if(menuState!==0) {
-      menuState = 0;
-      
-       $("#context-menu").fadeOut(600);
-      /*menu.classList.remove(active);*/
-    }
-  }
-  function getPosition(e){
-    
-    var posx = 0 + e.pixel.x;
-    var posy = 0 +e.pixel.y;
-    
-    if(!e) var e = window.event;
-    if(e.pageX || e.pageY){
-      posx = e.pageX;
-      posy = e.pageY;
-
-    }else if(e.clientX || e.clientY){
-      posx = e.clientX + document.body.scrollLeft +
-                        document.docuementElement.scrollLeft;
-      posy = e.clientY + document.body.scrollLeft +
-      document.docuementElement.scrollLeft;
-    }
-
-    return { 
-              x:posx, 
-              y : posy }
-  }
-
-  function getOffset(el) {
-  var xPos = 0;
-  var yPos = 0;
- 
-  while (el) {
-    if (el.tagName == "BODY") {
-      // deal with browser quirks with body/window/document and page scroll
-      var xScroll = el.scrollLeft || document.documentElement.scrollLeft;
-      var yScroll = el.scrollTop || document.documentElement.scrollTop;
-      
-      xPos += (el.offsetLeft - xScroll + el.clientLeft);
-      yPos += (el.offsetTop - yScroll + el.clientTop);
-    } else {
-      
-
-      // for all other non-BODY elements
-      xPos += (el.offsetLeft - el.scrollLeft + el.clientLeft);
-      yPos += (el.offsetTop - el.scrollTop + el.clientTop);
-    }
- 
-    el = el.offsetParent;
-    
-  }
-  return {
-    x: xPos,
-    y: yPos
-  };
-}
-
-  function positionMenu(e){
-    menuPosition = getPosition(e);
-   /* var bodyRect = document.body.getClientRects();*/
-   var map = document.querySelector("#map"); 
-   var pos = getOffset(map);
-     /*console.log("Rect ",mapRect);*/
-   /* var offsetTop = bodyRect.top - mapRect.top ;
-    var offsetLeft = bodyRect.left - mapRect.left;*/
-    /*console.log("Rect ",bodyRect,mapRect);*/
-    
-    menu.style.left = (menuPosition.x + pos.x)+"px";
-    menu.style.top = (menuPosition.y + pos.y )+"px";
-    
-  }
-
 
 
 
@@ -164,7 +47,87 @@ function toggleMenuOn(){
           disableDefaultUI: true,
           fullscreenControl:true
         });
+        function showInfoWindow(overlay,event){
+          var inputwindow = new google.maps.InfoWindow();
+          var inputContent = '<div class="row">'+
+                                '<form class="">'+
+                                  '<div class="row">'+
+                                    '<div class="input-field">'+
+                                      '<input id="title-iw" type="text" class="validate">'+
+                                      '<label for="title-iw">Title</label>'+
+                                    '</div>'+
+                                  '</div>'+
+                                  '<div class="row">'+
+                                    '<div class="input-field">'+
+                                      '<textarea id="textarea-iw" class="materialize-textarea"></textarea>'+
+                                      '<label for="textarea-iw">Description</label>'+
+                                      '<a href="#" id="infowindow-btn" class="btn right">save</a>'+
+                                    '</div>'+
+                                  '</div>'+
+                                  '</form></div>';
 
+          var latLngs = {
+                      lat:event.latLng.lat(),
+                      lng:event.latLng.lng()
+                    }; 
+                    /*infowindow.setContent('<h5>Google</h5><p>Hello from Google s HQ</p>');*/
+
+        inputwindow.setContent(inputContent);
+        inputwindow.setPosition(latLngs);
+        inputwindow.open(map);
+        $('#infowindow-btn').on('click',function(){
+          console.log('infowindow btn clicked!');
+          var title = $('#title-iw').val();
+          var description = $('#textarea-iw').val();
+          var content = '<h5>'+ title +'</h5><p>'+description+'</p>';
+
+          if (inputwindow !== null) {
+            google.maps.event.clearInstanceListeners(inputwindow);  // just in case handlers continue to stick around
+            inputwindow.close();
+            inputwindow = null;
+
+        }
+        var infowindow = new google.maps.InfoWindow({
+          content:content,
+          position:latLngs
+        });
+          infowindow.setContent(content);
+          infowindow.setPosition(latLngs);
+          var infoWindowListener;
+          console.log(overlay);
+          if(overlay.type){ 
+
+            infoWindowListener = overlay.overlay;
+            
+
+          }else if(overlay ==='rightclick'){
+          infoWindowListener = new google.maps.Marker({
+              position:latLngs,
+              map:map
+            });
+          console.log('marker');
+          }
+
+          infoWindowListener.addListener('mouseover',function(){
+                infowindow.open(map);
+            });
+          infoWindowListener.addListener('mouseout',function(){
+                infowindow.close();
+            });
+        });
+
+         
+
+          }
+
+        
+
+          map.addListener('rightclick',function(event){
+            console.log(event);
+            showInfoWindow('rightclick',event);
+          });
+       
+        
         
         $('#clear').on('click',function(){
           for(var i=0;i<SHAPES.length;i++){
@@ -230,7 +193,7 @@ function toggleMenuOn(){
         toggleButton('circle');
         toggleButton('rectangle');
         toggleButton('polyline');
-
+        
 
 
         
@@ -307,15 +270,15 @@ function toggleMenuOn(){
       
         
         
-        map.addListener("rightclick",function(e){
+       /* map.addListener("rightclick",function(e){
             positionMenu(e);
-
+*/
             /*console.log("Context Menu Prevented");*/
             /*e.preventDefault();*/
 
-            toggleMenuOn();
+            /*toggleMenuOn();*/
             /*console.log(e.latLng);*/
-          });
+         /* });*/
         
         
 
@@ -392,8 +355,13 @@ function toggleMenuOn(){
             });
           
           google.maps.event.addListener(drawingManager,'overlaycomplete', function(event){
+
+              event.overlay.addListener('rightclick',function(e) {
+                
+                /*e.preventDefault();*/
+                showInfoWindow(event,e);
+              });
             if(event.type==='circle'){
-              
               SHAPES.push(event.overlay);
               CIRCLES.push(
                           {
@@ -410,6 +378,8 @@ function toggleMenuOn(){
               
               
             }else if(event.type==='rectangle'){
+              /*event.overlay.addListener('rightclick',addInfoWindow);*/
+              
               console.log("strokeWeight",event.overlay.strokeWeight);
               console.log("fillColor",event.overlay.fillColor);
               console.log("fillOpacity",event.overlay.fillOpacity);
@@ -417,7 +387,9 @@ function toggleMenuOn(){
               SHAPES.push(event.overlay);
 
             }else if(event.type==='polygon'){
-              console.log("Polygon:" ,event);
+              
+
+              /*console.log("Polygon:" ,event);*/
 
                 var obj = [];
 
@@ -429,7 +401,7 @@ function toggleMenuOn(){
                 obj.push( event.overlay.getPath().getArray()[i].lng());
                 
               }
-              console.log(event.overlay.fillColor);
+              
               POLYGONS.push({
                 "type":event.type,
                 "fillOpacity":event.overlay.fillOpacity,
@@ -521,7 +493,7 @@ function toggleMenuOn(){
                 
                 var i =0;
               var bar = $('.color');
-              console.log(bar);
+              /*console.log(bar);*/
               $(".color").each(function(){
                   
                   $(this).css("background-color", palette[i]);
