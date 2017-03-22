@@ -31,7 +31,7 @@
      <li><a href="/logout">Logout</a></li>
      @else
      <li><a href="#register">Sign up</a></li>
-     <li><a href="/login">Login</a></li>
+     <li ><a href="/login">Login</a></li>
      @endif
    </ul>
  </div>

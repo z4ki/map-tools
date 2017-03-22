@@ -42,7 +42,7 @@
         <div class="background">
           
         </div>
-        <a href="#!user"><img class="circle" src="/img/google-map.jpg"></a>
+        <a href="#!user"><img class="circle" src="/img/zak.jpg"></a>
         <a href="#!name"><span class="white-text name">{{ Auth::user()->name}}</span></a>
         <a href="#!email"><span class="white-text email" >{{ Auth::user()->email}} <i class="material-icons " style="font-size:14px; color:#fff;">settings</i></span></a>
       </div>
@@ -50,12 +50,12 @@
     <div class="list-items">
     <li id="home" class="active"><a href="/"  ><i class="material-icons" >home</i>Home</a></li>
 
-    <li id="new-project"><a href="#!"><i class="material-icons">add</i>New Project</a></li>
+    <li id="new-project"><a href="/addAgent"><i class="material-icons">add</i>New Agent</a></li>
    <!--  <li><div class="divider"></div></li>
     <li><a class="subheader">My Account</a></li> -->
     <li id="latest-projects"><a class="waves-effect" href="/projects"><i class="material-icons">room</i>Latest Projects</a></li>
     <li id="my-projects">
-          <a href="/pro" ><i class="material-icons">work</i><span class="badge white-text text-darken-4">10</span>My Projects</a>
+          <a href="/pro" ><i class="material-icons">work</i><!-- <span class="badge white-text text-darken-4">10</span> -->Departement Projects</a>
     </li>
     <li id="settings">
         <a class="waves-effect" href="#!"><i class="material-icons">settings</i>Profile Settings</a>

@@ -36,28 +36,39 @@ class AuthController extends Controller
 		return redirect('/');
 	}
 
-	public function register(){
-
-		$validator = \Validator::make(request()->all(),
-			['name' => 'required',
-			 'email'=> 'required|email',
-			 'password' => 'required|confirmed'
-			]);
-
-		if($validator->fails()){
-			return redirect('/#register')
-			->withErrors($validator)
-			->withInput();
-		}
+	public function register(Request $request){
 		
+		
+			if($request->ajax()){
+			$validator = \Validator::make($request->all(),
+				['name' => 'required',
+				 'email'=> 'required|email',
+				 'password' => 'required|confirmed'
+				]);
 
-		$user = User::create([
+			if($validator->fails()){
+				/*dd($validator);*/
+				/*return redirect('/addAgent')
+				->withErrors($validator)
+				->withInput();*/
+				return response()->json("failed");
+			}
+		
+			$user = User::create([
+				'name' => $request->name,
+				'email' => $request->email,
+				'password' => bcrypt($request->password)
+				]);
+
+			
+			return response()->json("New Agent added!");
+		}
+
+		/*$user = User::create([
 			'name' => request('name'),
 			'email' => request('email'),
 			'password' => bcrypt(request('password'))
-			]);
-
-		auth()->login($user);
+			]);*/
 
 	}
 

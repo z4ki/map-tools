@@ -23,25 +23,10 @@
       height :450px!important;
       width: 850px!important;
       margin-bottom: 5px!important;
+      margin-top: 15px!important;
     }
-    #searchbar {
-      background-color: #f8f8f8!important;
-      margin-bottom: 10px!important;
-      border-radius: 10px;
-      /*padding: 0!important;*/
-      /*height:44px!important;
-      line-height: 44px!important;*/
-    }
-    #searchbar i {
-      color:#444!important;
-    }
-    #search  {
-      /*padding: 0!important;*/
-      /*height:44px!important;*/
-    }
-    #search:focus {
-      background-color: #f8f8f8!important;
-    }
+    
+
     #h-bar button  {
       padding: 0 5px!important;
       /*color:#000!important;*/
@@ -85,40 +70,66 @@
       .btn {
         padding: 0 1rem!important;
       }
+
+
+      #search-box {
+
+        height:3rem!important;
+        margin-left: 5px!important;
+        margin-bottom: 1rem!important;
+        background-color: #fff!important;
+        /*border-radius: 15px;*/
+      }
+
+      
+
+      input[type=search]{
+        background-color: #fff!important;
+        border-bottom: none!important;
+        margin:5px 0!important;
+        padding-left: 2.5rem!important;
+        height:2.5rem!important;
+      }
+      input[type=search]:focus,input[type=search]:hover{
+        background-color: #fff!important;
+
+      }
+      #h-bar a:hover {
+        font-weight: bold!important;
+      }
     
     </style>
 		<div class="section">
     
-    <nav id="searchbar" class="col m8">
-    <div class="nav-wrapper ">
-      <form>
-        <div class="input-field">
-          <input id="search" type="search" required>
-          <label class="label-icon" for="search"><i class="material-icons red-text">search</i></label>
-          <i class="material-icons">close</i>
+    <!-- <nav id="searchbar" class="col m8">
+    <div class="nav-wrapper "> -->
+      
+        <div id="search-box" class="input-field  white col s6 ">
+          <input id="searchbar" type="search" placeholder="place name or latitude and langitude " class="white">
+          <label class="label-icon white" for="search"><i class="material-icons ">search</i></label>
         </div>
-      </form>
-    </div>
-  </nav>  
+      
+    <!-- </div>
+  </nav>   -->
     </div>
     <form id="map-form" method="post" action="/dash/store" >
       {{csrf_field()}}
       <div class="row">
         
     
-        <div id="map" class="col s11 "></div>
+        <div id="map" class="col s11 z-depth-1"></div>
         <div id="bar" class="col s1 " >
             <ul>
-              <li class="color"></li>
-              <li class="color"></li>
-              <li class="color"></li>
-              <li class="color"></li>
-              <li class="color"></li>
-              <li class="color"></li>
-              <li class="color"></li>
-              <li class="color"></li>
-              <li class="color"></li>
-              <li class="color"></li>
+              <li class="color z-depth-1"></li>
+              <li class="color z-depth-1"></li>
+              <li class="color z-depth-1"></li>
+              <li class="color z-depth-1"></li>
+              <li class="color z-depth-1"></li>
+              <li class="color z-depth-1"></li>
+              <li class="color z-depth-1"></li>
+              <li class="color z-depth-1"></li>
+              <li class="color z-depth-1"></li>
+              <li class="color z-depth-1"></li>
 
             </ul>
         </div>
@@ -140,6 +151,7 @@
         <div class="input-field col s12">
           <textarea id="description" class="materialize-textarea"></textarea>
           <label for="description">Description</label>
+          <div class="g-recaptcha" data-sitekey="6LeCvBkUAAAAAJmeFRCBwI48W16gvRvRhoCOXuV8"></div>
           <a href="#!" id="modal-btn" class="modal-action modal-close waves-effect waves-green btn  right ">Save!</a>
         </div>
         
@@ -188,9 +200,9 @@
 
       <script type="text/javascript" src="/js/mapster.js"></script>
       <script 
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUX7u8kULgOdFAz-_iJbKb-o0miLfEbb4&libraries=drawing&callback=initMap"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUX7u8kULgOdFAz-_iJbKb-o0miLfEbb4&libraries=drawing,places&callback=initMap"
     async defer></script>
-
+    <script async defer src='https://www.google.com/recaptcha/api.js'></script>
     <script type="text/javascript">
       
       
@@ -208,6 +220,18 @@ $("#modal-btn").on('click',function(){
   $('#map-form').trigger('submit');
 });
 
+$('#search-box').mouseover(function(){
+  console.log('mouseover');
+  $(this).addClass('z-depth-2');
+});
+
+$('#search-box').mouseout(function(){
+  $(this).removeClass('z-depth-2');
+});
+$('input[type=search]').focusin(function(){
+
+  $('#search-box').addClass('z-depth-2');
+});
 
         
   

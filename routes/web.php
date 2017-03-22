@@ -8,6 +8,12 @@ Route::get('/', function () {
 Route::get('/dash',function(){
   return view('dashboard');
 })->middleware('auth');
+
+Route::get('/addAgent',function(){
+  return view('addAgent');
+})->middleware('auth');
+
+
 Route::post('/dash/store','AuthController@storePlan');
 
 
