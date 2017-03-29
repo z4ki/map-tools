@@ -13,16 +13,20 @@ Route::get('/addAgent',function(){
   return view('addAgent');
 })->middleware('auth');
 
+Route::post('/settings','AuthController@updateProfile');
+Route::get('/settings',function(){
+	return view('profile-settings');
+});
 
-Route::post('/dash/store','AuthController@storePlan');
+Route::post('/dash/store','MapController@storeMap');
 
 
 Route::get('/projects',function(){
 	return view('projects');
 });
-Route::get('/projects/show','AuthController@showProjects');
+Route::get('/projects/show','MapController@showProjects');
 
-Route::get('/projects/show/{id}','AuthController@showMap');
+Route::get('/projects/show/{id}','MapController@showMap');
 
 
 
@@ -36,4 +40,7 @@ Route::post('/login' ,'AuthController@store');
 Route::get('/logout','AuthController@destroy');
 
 
-Route::post('/register' ,'AuthController@register');
+Route::post('/register' ,'AuthController@registerNewAgent');
+
+
+Route::get('/admin','AuthController@addAdmin');

@@ -27,7 +27,7 @@
      <li><a href="#">Services</a></li>
      <li><a href="#">Contact us</a></li>
      @if(Auth::check())
-     <li><a href="/dash">{{Auth::user()->name}}</a></li>
+     <li><a href="/dash">{{Auth::user()->first_name}}</a></li>
      <li><a href="/logout">Logout</a></li>
      @else
      <li><a href="#register">Sign up</a></li>
