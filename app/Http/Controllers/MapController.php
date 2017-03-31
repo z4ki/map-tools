@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Map;
-class MapController extends Controller
+class MapController extends AuthController
 {
     //
 		/* Store Map that made by a user*/
@@ -13,20 +13,32 @@ class MapController extends Controller
 	
 
 	if($request->ajax()){
-			 $data =  $request->all();
+		$result = $this->validateCaptcha($request->captcha);
+		if($result['success'] == 1){
+
+			$data =  $request->all();
+			
+			/*$data->rectangles = $request->rectangles;
+			data*/
+			
+
 
 			Map::create([
 				'user_id' => auth()->id(),
-				'map' => json_encode($data)
+				'map' => json_encode($data),
+				'project_name' => $request->projectName,
+				'description'  => $request->description
 				]);
 
-		return response()->json($data);
-		
-	}
+		return response()->json("Saved!!");
+	}else {
+		return response()->json('reCaptcha wrong');
+
+			}
 
 }
 
-
+}
 	/* Show user  projects*/
 
 public function showProjects(Request $request){

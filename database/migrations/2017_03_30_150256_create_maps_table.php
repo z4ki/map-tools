@@ -13,11 +13,15 @@ class CreateMapsTable extends Migration
      */
     public function up()
     {
+        //
         Schema::create('maps', function (Blueprint $table) {
+           
             $table->increments('id');
-            $table->integer('user_id');
-            $table->longText('map');
-            $table->timestamps();
+                $table->integer('user_id');
+                $table->longText('map');
+                $table->string('project_name');
+                $table->string('description');
+                $table->timestamps();
         });
     }
 
@@ -28,6 +32,6 @@ class CreateMapsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('maps');
+        //
     }
 }

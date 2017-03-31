@@ -97,6 +97,9 @@
       #h-bar a:hover {
         font-weight: bold!important;
       }
+      #wrong-captcha{
+        margin-top : -15px!important;
+      }
     
     </style>
 		<div class="section">
@@ -151,6 +154,7 @@
         <div class="input-field col s12">
           <textarea id="description" class="materialize-textarea"></textarea>
           <label for="description">Description</label>
+          <div id="wrong-captcha"></div>
           <div class="g-recaptcha" data-sitekey="6LeCvBkUAAAAAJmeFRCBwI48W16gvRvRhoCOXuV8"></div>
           <a href="#!" id="modal-btn" class="modal-action modal-close waves-effect waves-green btn  right ">Save!</a>
         </div>

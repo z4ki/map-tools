@@ -11,6 +11,11 @@ use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
+
+	/*public function __construct()
+	{
+	    $this->middleware('auth');
+	}*/
     // Create An Admin for just the first time 
     
     public function addAdmin(){
@@ -43,7 +48,7 @@ class AuthController extends Controller
 				]);
 		}
 
-		return redirect('/dash');
+		return redirect()->intended('/dash');
 	}
 
 
@@ -67,7 +72,9 @@ class AuthController extends Controller
 			$filename = time() . '.' . $request->avatar->extension();
 			$request->avatar->storeAs('public/avatars/',"$filename");
 			
-			
+			$user = Auth::user();
+			$user->avatar = $filename;
+			$user->save();
 			$url = Storage::url('avatars/ ' . $filename);
 			$img = "<img src='". $url . "'/>";
 			return $img;

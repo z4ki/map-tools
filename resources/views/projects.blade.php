@@ -9,27 +9,16 @@
         <thead>
           <tr>
               <th data-field="id">Project Name</th>
+              <th data-field="created">Description</th>
               <th data-field="created">Created at</th>
               <th data-field="updated">Updated at</th>
               <th class="center-align " data-field="actions">Actions</th>
-
-
           </tr>
         </thead>
 
         <tbody>
          
-          <!--<tr>
-
-             <td id="name"></td>
-            <td id="created_at"></td>
-            <td id="updated_at"></td>
-            <td>
-              <a href="#" id="delete"><span class="new badge red" data-badge-caption="delete"></span></a>
-              <a href="" id="edit"><span class="new badge yellow" data-badge-caption="edit"></span></a>
-              <a href="" id="view"><span  class="new badge" data-badge-caption="view"></span></a>
-            </td> 
-          </tr>-->
+         
           
                   </tbody>
       </table>
@@ -45,7 +34,8 @@
       for(var i=0;i<data.length;i++){
 
       var table =  '<tr>'+
-                  '<td id="name">'+ data[i].id + '</td>'+
+                  '<td id="name">'+ data[i].project_name + '</td>'+
+                  '<td id="created_at">'+data[i].description+'</td>'+
                   '<td id="created_at">'+data[i].created_at+'</td>'+
                   '<td id="updated_at">'+data[i].updated_at+'</td>'+
                   '<td>'+

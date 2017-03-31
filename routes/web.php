@@ -7,26 +7,26 @@ Route::get('/', function () {
 });
 Route::get('/dash',function(){
   return view('dashboard');
-})->middleware('auth');
+});
 
 Route::get('/addAgent',function(){
   return view('addAgent');
-})->middleware('auth');
+});
 
 Route::post('/settings','AuthController@updateProfile');
 Route::get('/settings',function(){
 	return view('profile-settings');
 });
 
-Route::post('/dash/store','MapController@storeMap');
+Route::post('/dash/store','MapController@storeMap')->middleware('auth');
 
 
 Route::get('/projects',function(){
 	return view('projects');
 });
-Route::get('/projects/show','MapController@showProjects');
+Route::get('/projects/show','MapController@showProjects')->middleware('auth');
 
-Route::get('/projects/show/{id}','MapController@showMap');
+Route::get('/projects/show/{id}','MapController@showMap')->middleware('auth');
 
 
 

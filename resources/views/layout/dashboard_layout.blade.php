@@ -50,7 +50,7 @@
       </div>
     </li>
     <div class="list-items">
-    <li id="home" class="active"><a href="/"  ><i class="material-icons" >home</i>Home</a></li>
+    <li id="home" class="active"><a href="/dash"  ><i class="material-icons" >home</i>Map</a></li>
 
     <li id="new-project"><a href="/addAgent"><i class="material-icons">add</i>New Agent</a></li>
    <!--  <li><div class="divider"></div></li>
