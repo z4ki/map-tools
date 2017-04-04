@@ -72,13 +72,12 @@ class AuthController extends Controller
 			$filename = time() . '.' . $request->avatar->extension();
 			$request->avatar->storeAs('public/avatars/',"$filename");
 			
-			$user = Auth::user();
+			$user = \Auth::user();
 			$user->avatar = $filename;
 			$user->save();
-			$url = Storage::url('avatars/ ' . $filename);
-			$img = "<img src='". $url . "'/>";
-			return $img;
-			
+			/*$url = Storage::url('avatars/ ' . $filename);
+			$img = "<img src='". $url . "'/>";*/
+			return back();			
 		}
 	}
 

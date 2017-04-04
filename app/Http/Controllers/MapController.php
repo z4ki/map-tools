@@ -46,7 +46,7 @@ public function showProjects(Request $request){
 
 
 	if($request->ajax()){
-		$map = Map::all();
+		$map = Map::where('user_id',auth()->user()->id)->get();
 	
 	return response()->json($map);
 		

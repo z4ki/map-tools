@@ -100,6 +100,25 @@
       #wrong-captcha{
         margin-top : -15px!important;
       }
+
+
+      /* for Spinner */
+      .loader {
+          margin-left: 5px;
+          margin-right: 2px;
+          display:inline-flex;
+          border: 5px solid #fff; /* Light grey */
+          border-top: 5px solid #000; /* Blue */
+          border-radius: 50%;
+          width: 20px;
+          height: 20px;
+          animation: spin 2s linear infinite;
+      }
+
+      @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+      }
     
     </style>
 		<div class="section">
@@ -108,7 +127,7 @@
     <div class="nav-wrapper "> -->
       
         <div id="search-box" class="input-field  white col s6 ">
-          <input id="searchbar" type="search" placeholder="place name or latitude and langitude " class="white">
+          <input id="searchbar" type="search" placeholder="Search by place name" class="white">
           <label class="label-icon white" for="search"><i class="material-icons ">search</i></label>
         </div>
       
@@ -139,7 +158,7 @@
       
         <!-- Dropdown Trigger -->
         <!-- <a class="dropdown-button btn right " style="margin-right:115px;" href="#" data-activates="dropdown1">Save as</a> -->
-        <a href="#modal1" id="save-moal"  class="modal-trigger btn right" style="margin-right:115px;">Save</a>
+        <a href="#modal1" id="save-modal"  class="modal-trigger btn right" style="margin-right:115px;">Save</a>
       </div>
     </form>
     <div id="modal1" class="modal col s5">
@@ -221,6 +240,8 @@ var description;
 $("#modal-btn").on('click',function(){
   projectName = $('#project_name').val();
   description = $('#description').val();
+  var spinner = '<div class="loader"></div>';
+  $('#save-modal').append(spinner);
   $('#map-form').trigger('submit');
 });
 
