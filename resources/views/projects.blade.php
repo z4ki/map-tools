@@ -1,8 +1,38 @@
 @extends('layout/dashboard_layout')
 
 @section('content')
+<style type="text/css">
+  .breadcrumb:before {
+    content: '\E5CC';
+    color:#7696f3!important;
+    margin: 0 0 8px 0!important;
+  }
+  .breadcrumb:last-child {
+    color: #7696f3!important;
+  }
+  .chip {
+    height: 40px!important;
+    font-size: 18px!important;
+    line-height: 40px!important;
+  }
+</style>
+<!-- <h2 class="pink-text darken-3 " >All Projects !! </h2> -->
+ 
+      <div class="col s12">
+        <div class="col s3  chip">
+          <a href="/dash" class=" white-text  darken-3 breadcrumb ">Dashboard</a>
+          <a href="/projects" class="breadcrumb">All projects</a>
 
-<div id="MyProjects" style="margin-top:200px;" >
+        </div>
+      </div>
+      
+    
+    
+<div id="MyProjects" style="margin-top:50px;" >
+  <div id="search-box" class="input-field  white col s6 ">
+          <input id="searchbar" type="search" placeholder="Search by project name" class="white">
+          <label class="label-icon white" for="search"><i class="material-icons ">search</i></label>
+        </div>
   
 
     <table class="highlight">
@@ -25,13 +55,12 @@
 </div>
 
 <script type="text/javascript">
-  $(document).ready(function(){
-    console.log("Ready!!");
-    
 
-    $.get("/projects/show",function(data){
-      console.log(data);
-      for(var i=0;i<data.length;i++){
+
+$('title').html('All Projects');
+  $(document).ready(function(){
+    function populateTable(data){
+         for(var i=0;i<data.length;i++){
 
       var table =  '<tr>'+
                   '<td id="name">'+ data[i].project_name + '</td>'+
@@ -46,14 +75,35 @@
 
 
                   $("tbody").prepend(table);
-        /*$('#name').html(data[i].id);
-        $('#created_at').html(data[i].created_at);
-        $('#updated_at').html(data[i].updated_at);
-        $("td #view").attr("href","projects/show/"+ data[i].id);*/
-      }
+       
+      }     
+              
+
+    }
+    $('.active').removeClass();
+    $('#latest-projects').addClass('active');
+    
+
+    $.get("/projects/show",function(data){
+      
+      populateTable(data);
       
 
     });
+
+    $('#searchbar').focusin(function(){
+  
+        window.onkeyup = function(e){
+          $.get(
+            window.location.origin +'/search/' + $('#searchbar').val() ,
+            function(data){
+              $("tbody").html('');
+              populateTable(data);
+              
+            }
+            );
+        }
+      });
   });
   
 </script>

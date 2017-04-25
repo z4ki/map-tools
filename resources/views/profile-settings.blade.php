@@ -22,15 +22,15 @@
 			          <h3 class="pink-text"><i class="material-icons">settings</i>&nbsp<b>Profile Settings</b></h3>
 			        </div>
 					<div class="input-field col s12 ">
-			          <input placeholder="{{ Auth::user()->first_name}}" id="first_name" name="first_name" type="text" class="validate">
+			          <input value="{{ Auth::user()->first_name}}" id="first_name" name="first_name" type="text" class="validate">
 			          <label for="first_name">First Name</label>
 			        </div>
 			        <div class="input-field col s12">
-			          <input placeholder="{{ Auth::user()->last_name ? Auth::user()->last_name : 'lastname'  }}" id="last_name" type="text" class="validate" name="last_name">
+			          <input value="{{ Auth::user()->last_name ? Auth::user()->last_name : 'lastname'  }}" id="last_name" type="text" class="validate" name="last_name">
 			          <label for="last_name">Last Name</label>
 			        </div>
 			        <div class="input-field col s12">
-			          <input placeholder="{{ Auth::user()->email}}" id="email" type="email" name="email" class="validate">
+			          <input value="{{ Auth::user()->email}}" id="email" type="email" name="email" class="validate">
 			          <label for="email">email</label>
 			        </div>
 			        <div class="input-field col s12">
@@ -57,32 +57,8 @@
 			</form>
 		</div><!-- end row -->
 	
-		<!-- <script type="text/javascript">
-		$.ajaxSetup({
-	            headers: {
-	              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-	            }
-	          });
-			$("form").on('submit',function(e){
-				e.preventDefault();
-				console.log('submited');
-				$.ajax({
-					method:'post',
-					url:'/settings',
-					data:{
-						/*'first_name':$('#first_name').val(),
-						'lastname':$('#lastname').val(),*/
-						'image':$('#image').val()
-						/*$(this).serialize();*/
-
-					},
-					success:function(data){
-						console.log(data);
-					},
-					error:function(data){
-						console.log(data);
-					}
-				});
-			})
-		</script> -->
+		 <script type="text/javascript">
+				$('.active').removeClass();
+		    	$('#settings').addClass('active');
+		</script> 
 		@endsection

@@ -14,7 +14,7 @@ class AuthController extends Controller
 
 	/*public function __construct()
 	{
-	    $this->middleware('auth');
+	    $this->middleware('auth')->except(['create']);
 	}*/
     // Create An Admin for just the first time 
     
@@ -58,7 +58,7 @@ class AuthController extends Controller
 	/* logout method*/
 	public function destroy(){
 		auth()->logout();
-		return redirect('/');
+		return redirect()->back();
 	}
 
 
@@ -67,18 +67,28 @@ class AuthController extends Controller
 
 	public function updateProfile(Request $request){
 
+		$user = \Auth::user();
+		$user->first_name = $request->first_name;
+		$user->last_name = $request->last_name;
+		$user->email = $request->email;
+
+		if($request->password){
+			
+			$user->password = $request->password;
+		}
+
 		if($request->hasFile('avatar')){
-			$avatar = $request->file('avatar');
+			
 			$filename = time() . '.' . $request->avatar->extension();
 			$request->avatar->storeAs('public/avatars/',"$filename");
 			
-			$user = \Auth::user();
 			$user->avatar = $filename;
-			$user->save();
-			/*$url = Storage::url('avatars/ ' . $filename);
-			$img = "<img src='". $url . "'/>";*/
-			return back();			
+			
 		}
+			$user->save();
+			return back();			
+
+		
 	}
 
 	/* Add new Agent or Manager */
@@ -88,11 +98,11 @@ class AuthController extends Controller
 
 		
 		
-			if($request->ajax()){
+			/*if($request->ajax()){
+*/
+				/*$result = $this->validateCaptcha($request->captcha);*/
 
-				$result = $this->validateCaptcha($request->captcha);
-
-				if($result['success'] == 1){
+				/*if($result['success'] == 1){*/
         
 						$validator = \Validator::make($request->all(),
 							['first_name' => 'required',
@@ -102,11 +112,11 @@ class AuthController extends Controller
 							]);
 
 						if($validator->fails()){
-							/*dd($validator);*/
-							/*return redirect('/addAgent')
+							
+							return redirect('/addAgent')
 							->withErrors($validator)
-							->withInput();*/
-							return response()->json("Please check you inputs again!!");
+							->withInput();
+							/*return response()->json($validator);*/
 						}
 						if(auth()->user()->type == 'admin'){
 							$type = $request->type;
@@ -114,9 +124,16 @@ class AuthController extends Controller
 
 							$type = 'agent';
 						}
-
-						
 				
+				$exist = User::where('email',$request->email)->first();
+				
+				if($exist != null){
+					
+					return redirect('/addAgent')
+							->withErrors("email already exist!")
+							->withInput();
+				}else{
+
 					$user = User::create([
 						'first_name' => $request->first_name,
 						'last_name' => $request->last_name,
@@ -127,26 +144,35 @@ class AuthController extends Controller
 						]);
 
 					$msg = "New " . $type ." has been added!";
-					return response()->json($msg);
-			    }else{
+					session()->flash('message', $msg );
+					return redirect('/addAgent');
+			    /*}else{
 			    	return response()->json('reCaptcha');
-			    }
-		}
+			    }*/
+		/*}*/
+				}
 
 		}
 
 
 
 
-	/* Validate reCaptcha */
-	 public function validateCaptcha($response){
-		$secret = '6LeCvBkUAAAAAK3pv_ifzDgH2-gbwnGdLrkuV1IE';
-		$url = file_get_contents(
-			"https://www.google.com/recaptcha/api/siteverify?secret=$secret&response=$response"
-			);
-		$result = json_decode($url,TRUE);
-		return $result;
-	 }
+	public function showUsers(Request $request){
+		if($request->ajax()){
+			if(auth()->user()->type == 'admin'){
+				$users = User::all();
+				return response()->json($users);
+			}else{
+
+				$users = User::where('supervisor_id','=' ,auth()->id())->get();
+				return response()->json($users);
+			}
+		}else{
+			return view('users');
+		}
+	}
+	 
+	 
 
 
 }

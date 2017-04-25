@@ -54,54 +54,28 @@
                   
                   
                 <div id="wrong-recaptcha" class="red-text lighten-2 "></div>
-                <div class="g-recaptcha " data-sitekey="6LeCvBkUAAAAAJmeFRCBwI48W16gvRvRhoCOXuV8"></div>
                 </div>
                 
 
                
                 <button class="btn  waves-effect waves-light   pink col s3 z-depth-3 right" type="submit"><span class="white-text" >Add</span> </button>
               </div>
+              @if($flash =session('message'))
+              <script type="text/javascript">
+                
+                Materialize.toast('{{$flash}}', 4000);
+              </script>
+              
+
+              @endif
               @include('errors')
             </form>
 
 
             <script src='https://www.google.com/recaptcha/api.js'></script>
             <script type="text/javascript">
-            $.ajaxSetup({
-	            headers: {
-	              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-	            }
-	          });
-            
-            	$('button').on('click',function(e){
-            		e.preventDefault();
-                console.log('Posted');
-            		$.ajax({
-            			type:'POST',
-            			url:'/register',
-            			data:{
-            				'first_name':$('#first_name').val(),
-                    'last_name':$('#last_name').val(),
-                    'type':$('input[name="type"]:checked').val(),
-            				'email':$('#email').val(),
-            				'password':$('#password').val(),
-            				'password_confirmation':$('#password_confirmation').val(),
-                     'captcha' :  grecaptcha.getResponse()
-
-            			},
-            			success:function(data){
-            				if(data === 'reCaptcha'){
-                      $('#wrong-recaptcha').html('please solve captcha again ! ');
-                    }else{
-            				Materialize.toast(data, 4000);
-                    }
-            			},
-            			error:function(data){
-            				console.log('error');
-            			}
-            		});
-            	});
-              
-            </script>
+              $('.active').removeClass();
+              $('#new-agent').addClass('active');
+              </script>
 
 		@endsection

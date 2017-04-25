@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Map;
+use App\User;
 class MapController extends AuthController
 {
     //
@@ -13,8 +14,8 @@ class MapController extends AuthController
 	
 
 	if($request->ajax()){
-		$result = $this->validateCaptcha($request->captcha);
-		if($result['success'] == 1){
+		
+		
 
 			$data =  $request->all();
 			
@@ -31,10 +32,7 @@ class MapController extends AuthController
 				]);
 
 		return response()->json("Saved!!");
-	}else {
-		return response()->json('reCaptcha wrong');
-
-			}
+	
 
 }
 
@@ -68,6 +66,26 @@ public function showMap($id,Request $request){
 		
 	}
 			
+}
+
+public function search($string){
+	
+		if(auth()->user()->type == 'manager' || auth()->user()->type == 'admin'){
+			/*$users = User::where('supervisor_id',auth()->user()->id)->get();
+			dd($users);*/
+			$projectName =  Map::where("project_name" ,'like',  $string . '%')
+						->where('user_id',auth()->user()->id)
+						->get();
+		
+			return response()->json($projectName);
+		}else{
+			$projectName =  Map::where("project_name" ,'like', '%' . $string . '%')
+						->where('user_id',auth()->user()->id)
+						->get();
+		
+			return response()->json($projectName);
+		}
+	
 }
 
 

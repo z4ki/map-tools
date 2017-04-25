@@ -79,7 +79,7 @@ nav input[type="search"] {
 /*nav {
   height: 50px;
 }*/
-nav li  a:hover {
+nav li  a:hover ,.activated {
 
 color : #fff;
 border-bottom: 3px #fbc02d solid;
@@ -97,9 +97,7 @@ padidng-left 15px;
 z-index: 1001;
 position: relative;
 }
-#footer {
-background-color:#ff8a65;
-}
+
 /* Seach Bar Style*/
 .container-1{
   width: 550px;
@@ -142,6 +140,7 @@ transition: background .55s ease;
    color: #222222;
 }
 
+
 .container-1 .icon{
   position: absolute;
 
@@ -156,3 +155,22 @@ transition: background .55s ease;
     color: #fff;
     background: #222222;
   }
+
+.container-1 input#search:focus {
+  background-color: #fff!important;
+  color:#000!important;
+  font-weight: bold!important;
+}
+input, textarea{
+    color:#fff!important;
+    /*border-bottom: #fbc02d!important;*/
+    /*box-shadow: 0 1px 0 0 #fbc02d!important;*/
+}
+input:focus,textarea:focus {
+    border-bottom: #fbc02d!important;
+    box-shadow: 0 2px 0 0 #fbc02d!important;
+}
+
+  /* nav bar Active item*/
+
+  

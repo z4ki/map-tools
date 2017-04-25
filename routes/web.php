@@ -3,27 +3,38 @@
 
 
 Route::get('/', function () {
+
     return view('index');
+
 });
 Route::get('/dash',function(){
+
   return view('dashboard');
-});
+
+})->middleware('auth');
 
 Route::get('/addAgent',function(){
-  return view('addAgent');
-});
 
-Route::post('/settings','AuthController@updateProfile');
+  return view('addAgent');
+})->middleware('auth');
+
+Route::post('/settings','AuthController@updateProfile')->middleware('auth');
+
 Route::get('/settings',function(){
+
 	return view('profile-settings');
-});
+
+})->middleware('auth');
 
 Route::post('/dash/store','MapController@storeMap')->middleware('auth');
 
 
 Route::get('/projects',function(){
+
 	return view('projects');
-});
+
+})->middleware('auth');
+
 Route::get('/projects/show','MapController@showProjects')->middleware('auth');
 
 Route::get('/projects/show/{id}','MapController@showMap')->middleware('auth');
@@ -32,15 +43,29 @@ Route::get('/projects/show/{id}','MapController@showMap')->middleware('auth');
 
 Route::get('/login','AuthController@create')->name('login');
 
+
 Route::get('/register',function(){
+
   return view('auth.register');
-});
+
+})->middleware('auth');
 
 Route::post('/login' ,'AuthController@store');
-Route::get('/logout','AuthController@destroy');
+Route::get('/logout','AuthController@destroy')->middleware('auth');
 
 
-Route::post('/register' ,'AuthController@registerNewAgent');
+Route::post('/register' ,'AuthController@registerNewAgent')->middleware('auth');
 
 
 Route::get('/admin','AuthController@addAdmin');
+
+
+Route::get('/search/{string}','MapController@search');
+
+
+Route::get('/show/users','AuthController@showUsers');
+
+
+Route::get('/profile', function(){
+	return view('profile');
+});

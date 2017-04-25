@@ -13,6 +13,8 @@ var CIRCLES = [],
   RECTANGLES = [],
   SHAPES = [],
   infoWindowArr = [],
+  deletedOverlays = [],
+  deletedInfoWindow = [],
   POLYLINES = [];
   /*
   infowindow.push({
@@ -25,17 +27,14 @@ var CIRCLES = [],
 
 var fillColor;
 
+
 function computeArea(path){
   var area = google.maps.geometry.spherical.computeArea(path);
   return area;
 }
 
 $(document).ready(function () {
-  /*toggleMenuOff();*/
-
-  $("#saved-panel").hide();
-  $("#context-menu").hide();
-  $("#results").hide();
+  
   $('.tooltipped').tooltip({
     delay: 50
   });
@@ -52,14 +51,14 @@ function initMap() {
       lng: 6.4502461
     },
     zoom: 12,
-    disableDefaultUI: true,
+    disableDefaultUI: false,
     fullscreenControl: true
   });
+  
 
   var input = document.getElementById('searchbar');
 
   var searchBox = new google.maps.places.SearchBox(input);
-  /*map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);*/
   map.addListener('bound_changed', function () {
     searchBox.setBounds(map.getBounds());
   });
@@ -112,6 +111,10 @@ function initMap() {
 
 
   // Function for adding new infoWindow to the map.
+
+
+
+
   function showInfoWindow(overlay, event) {
     var inputwindow = new google.maps.InfoWindow();
     var inputContent = 
@@ -136,7 +139,6 @@ function initMap() {
       lat: event.latLng.lat(),
       lng: event.latLng.lng()
     };
-    /*infowindow.setContent('<h5>Google</h5><p>Hello from Google s HQ</p>');*/
 
     inputwindow.setContent(inputContent);
     inputwindow.setPosition(latLng);
@@ -174,12 +176,12 @@ function initMap() {
 
 
       } else if (overlay === 'rightclick') {
-        console.log("rightclick");
+        
         infoWindowListener = new google.maps.Marker({
           position: latLng,
           map: map
         });
-        console.log('marker');
+        // console.log('marker');
       }
 
       infoWindowListener.addListener('click', function () {
@@ -194,11 +196,17 @@ function initMap() {
   }
 
 
-  map.addListener('rightclick', function (event) {
+  /*map.addListener('rightclick', function (event) {
     
     showInfoWindow('rightclick', event);
-  });
+  });*/
 
+
+  // 
+  // 
+  // Clear all shapes on the map 
+  // 
+  // 
 
   $('#clear').on('click', function () {
     for (var i = 0; i < SHAPES.length; i++) {
@@ -207,24 +215,54 @@ function initMap() {
     }
   });
 
+  $('#undo').on('click',function(){
+    var overlay = SHAPES.pop();
+    var info = infoWindowArr.pop();
+
+    deletedOverlays.push(overlay);
+    deletedInfoWindow.push(info);
+    overlay.setMap(null);
+    info.setMap(null);
+  });
+
+  $('#redo').on('click',function(){
+    var  overlay = deletedOverlays.pop();
+    var info = deletedInfoWindow.pop();
+    SHAPES.push(overlay);
+    infoWindowArr.push(info);
+    overlay.setMap(map);
+    info.setMap(map);
+  });
+
+  // 
+  // 
+  // get the Current Location of the user 
+  // 
+  // 
+
+
+
   navigator.geolocation.getCurrentPosition(function (position) {
     var latLngs = {
       lat: position.coords.latitude,
       lng: position.coords.longitude
     };
-    var infoWindow = new google.maps.InfoWindow({
+    /*var infoWindow = new google.maps.InfoWindow({
       map: map
     });
     infoWindow.setPosition(latLngs);
-    infoWindow.setContent('You current location.');
+    infoWindow.setContent('You current location.');*/
     map.setCenter(latLngs);
   });
-  /**********************************************/
-  /**********************************************/
-  /**********************************************/
+
+
+
+  // 
+  // 
+  // 
   /*** Event Listeners For h-bar on the map ***/
 
-  function toggleButton(btnID) {
+ /* function toggleButton(btnID) {
     var btn = document.getElementById(btnID);
 
     btn.addEventListener('click', function () {
@@ -260,103 +298,63 @@ function initMap() {
       toggleDrawingManager(drawingManager);
     });
   }
+*/
 
-
-  toggleButton('polygon');
+  /*toggleButton('polygon');
   toggleButton('circle');
   toggleButton('rectangle');
-  toggleButton('polyline');
+  toggleButton('polyline');*/
 
 
   /* Circle button */
 
-  /*var circleBtn = document.getElementById('circle');
-  circleBtn.addEventListener('click',function(){
-    drawingManager.setOptions({
-      drawingControlOptions: {
-        drawingModes:['circle']
-      }
-    });
-    toggleDrawingPolygon(drawingManager);
-  });
-
-   Rectangle Button
-  var circleBtn = document.getElementById('rectangle');
-  circleBtn.addEventListener('click',function(){
-    drawingManager.setOptions({
-      drawingControlOptions: {
-        drawingModes:['rectangle']
-      }
-    });
-    toggleDrawingPolygon(drawingManager);
-  });*/
-
-
-  /*************************************************/
-  /*************************************************/
-  /*************************************************/
-  /*************************************************/
+  // 
+  // 
+  // 
   /* Custom Controls To Add Buttons the map*/
   /* Polygon ,Circle ,Rectangle Buttons  */
 
 
-  function CenterControl(controlDiv, map, id) {
+  // function CenterControl(controlDiv, map, id) {
 
-    // Set CSS for the control border.
-    var controlUI = document.createElement('div');
-    var btnUI = document.getElementById(id);
-    btnUI.style.marginBottom = '10px';
+  //   // Set CSS for the control border.
+  //   var controlUI = document.createElement('div');
+  //   var btnUI = document.getElementById(id);
+  //   btnUI.style.marginBottom = '10px';
 
-    controlDiv.appendChild(btnUI);
+  //   controlDiv.appendChild(btnUI);
 
-    // Set CSS for the control interior.
-    var controlText = document.createElement('div');
+  //   // Set CSS for the control interior.
+  //   var controlText = document.createElement('div');
 
 
-    controlUI.appendChild(controlText);
+  //   controlUI.appendChild(controlText);
 
-    // Setup the click event listeners: simply set the map to Chicago.
+    
 
-  }
+  // }
 
 
   // Create the DIV to hold the control and call the CenterControl()
   // constructor passing in this DIV.
-  var centerControlDiv = document.createElement('div');
+  /*var centerControlDiv = document.createElement('div');
   var centerControl = new CenterControl(centerControlDiv, map, 'h-bar');
 
   centerControlDiv.index = 1;
-  map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(centerControlDiv);
+  map.controls[google.maps.ControlPosition.BOTTOM_CENTER].push(centerControlDiv);*/
 
-  /* var rightControlDiv  = document.createElement('div');
-   var rightControl = new CenterControl(rightControlDiv,map,'v-bar');
-   rightControlDiv.index = 10;
-   map.controls[google.maps.ControlPosition.RIGHT].push(rightControlDiv);*/
-
-
-  /* map.addListener("rightclick",function(e){
-            positionMenu(e);
-*/
-  /*console.log("Context Menu Prevented");*/
-  /*e.preventDefault();*/
-
-  /*toggleMenuOn();*/
-  /*console.log(e.latLng);*/
-  /* });*/
-
-
-  /****************************************************/
-  /****************************************************/
-  /****************************************************/
-  /****************************************************/
-
-  /* Drawing Polygones */
+  
+  //
+  // 
+  // 
+  // 
+  /* Drawing Manager  */
 
   var drawingManager = new google.maps.drawing.DrawingManager({
     drawingMode: null,
     drawingControl: true,
     drawingControlOptions: {
-      position: google.maps.ControlPosition.TOP_LEFT,
+      position: google.maps.ControlPosition.TOP_CENTER,
       drawingModes: ['marker', 'circle', 'polygon', 'polyline', 'rectangle']
     },
     markerOptions: {
@@ -383,6 +381,8 @@ function initMap() {
     }
   });
 
+  // toggle the drawing manager on and off
+  drawingManager.setMap(map);
 
   function toggleDrawingManager(drawingManager) {
     if (drawingManager.map) {
@@ -393,41 +393,28 @@ function initMap() {
   }
 
 
+// 
+// 
+// overlay compelete event listener on every shape complete perform these instructions 
+// 
+// 
+  
+  //  global variable for the computeLength and ComputeArea
   var distance,area;
-  /*google.maps.event.addListener(drawingManager, 'polygoncomplete', function (polygon) {
-    console.log(polygon.getPath());
-    area = google.maps.geometry.spherical.computeArea(polygon.getPath());
-    
-    var infowindow = new google.maps.InfoWindow();
-        infowindow.setContent('<h5>Area</h5>'+ area +'m²');
-        infowindow.setMap(map);
-        var pos = event.overlay.getPath().getArray().pop();
-        console.log(pos);
-        infowindow.setPosition(pos);
-        infowindow.open(map);
-    $("#results").prepend("<li class='collection-item'><b>* Area:" + area + " m²</b></li>");
-    $("#results").show();
-
-  });
-*/
-  /*google.maps.event.addListener(drawingManager, 'polylinecomplete', function (polyline) {
-
-    
-
-
-    $("#results").prepend("<li class='collection-item'><b>* Distance: " + distance + " meters</b></li>");
-    $("#results").show();
-
-  });*/
 
   google.maps.event.addListener(drawingManager, 'overlaycomplete', function (event) {
-    SHAPES.push(event.overlay);
-    /* Adding a RightClick  Listener to every shape completed for showing the infoWindow */
-    event.overlay.addListener('rightclick', function (e) {
-      /*e.preventDefault();*/
-      showInfoWindow(event, e);
-    });
 
+
+    SHAPES.push(event.overlay);
+
+
+    /* Adding a RightClick  Listener to every shape completed for showing the infoWindow */
+    // event.overlay.addListener('rightclick', function (e) {
+    //   // e.preventDefault();
+    //   showInfoWindow(event, e);
+    // });
+
+    
     /* Storing Circle params */
 
     if (event.type === 'circle') {
@@ -444,43 +431,62 @@ function initMap() {
 
       var cirlceArea = Math.PI * Math.pow(event.overlay.radius, 2);
       var circleInfoWindow = new google.maps.InfoWindow({
-        content:'<h5>Circle Area</h5><b>'+cirlceArea +'</b>',
-        map:map,
-        position:event.overlay.center
-      }).open(map);
+        content:'<h5>Circle Area</h5><b>'+cirlceArea +'M²</b>',
+        position:event.overlay.center,
+        map:map
+      });
+      // circleInfoWindow.setMap(map);
+      // circleInfoWindow.open(map);
+
+      infoWindowArr.push(circleInfoWindow);
+
+      event.overlay.addListener('mouseover',function(e){
+        console.log('open');
+        circleInfoWindow.open(map);
+      });
+
+      event.overlay.addListener('mouseout',function(e){
+        circleInfoWindow.close();
+      });
+      
+
 
 
     } else if (event.type === 'rectangle') {
       /*event.overlay.addListener('rightclick',addInfoWindow);*/
-      console.log("Rectangle path:",event.overlay);
+      /*console.log("Rectangle path:",event.overlay);*/
       var bounds = event.overlay.getBounds();
       var northEast = new google.maps.LatLng(bounds.getNorthEast().lat(),bounds.getNorthEast().lng());
       var southWest  = new google.maps.LatLng(bounds.getSouthWest().lat(),bounds.getSouthWest().lng());
       var southEast  = new google.maps.LatLng(bounds.getSouthWest().lat(),bounds.getNorthEast().lng());
       var northWest  = new google.maps.LatLng(bounds.getNorthEast().lat(),bounds.getSouthWest().lng());
-
-      var center = {lat:bounds.getCenter().lat(),lng:bounds.getCenter().lng()};
+      var center = new google.maps.LatLng(bounds.getCenter().lat(),bounds.getCenter().lng());
+      
       /*console.log(northEast);
       console.log(center);*/
 
       RECTANGLES.push({
-        "northEast":northEast,
+        "bounds":bounds,
+        /*"northEast":northEast,
         "southWest":southWest,
         "southEast":southEast,
         "northWest":northWest,
-        "center":center,
+        "center":center,*/
         "zIndex":event.overlay.zIndex,
         "strokeWeight": event.overlay.strokeWeight,
         "fillColor": event.overlay.fillColor,
         "fillOpacity": event.overlay.fillOpacity,
         "strokeOpacity": event.overlay.strokeOpacity
       });
+      
+
+      //  the calculated area unit is KM²
     
-      var rectArea =  google.maps.geometry.spherical.computeArea([northEast,northWest,southWest,southEast]) /  (1000000) ;
- /*     console.log(rectArea);*/
+      var rectArea =  computeArea([northEast,northWest,southWest,southEast]) /  (1000000) ;
+ 
       
       var rectangleInfoWindow = new google.maps.InfoWindow({
-        content:'<h5>Rectangle Area</h5><b>'+ rectArea+ ' Km²</b>',
+        content:'<h5>Rectangle Area</h5><b>'+ rectArea + ' Km²</b>',
         map:map,
         position:center
       }).open(map);
@@ -489,6 +495,7 @@ function initMap() {
 
 
     }else if (event.type=== 'polyline'){
+
       var coords = event.overlay.getPath().getArray();
       var latLngs = [];
       for (var i =0;i<coords.length;i++){
@@ -499,22 +506,20 @@ function initMap() {
         "latLngs":latLngs,
         "zIndex":event.overlay.zIndex
       });
+      // the calculated Distance unit is in Meters
       distance = google.maps.geometry.spherical.computeLength(event.overlay.getPath());
 
       var polylineInfoWindow = new google.maps.InfoWindow({
-        content:'<h5>Distance</h5><b>'+ distance +'m²</b>', 
+        content:'<h5>Distance</h5><b>'+ distance +' meters</b>', 
         map:map,
-        position:event.overlay.getPath().getArray().pop()
+        position:event.overlay.getPath().getArray()[0]
       }).open(map);
 
 
 
     } else if (event.type === 'polygon') {
 
-      /*console.log(event.overlay.getPath());
-      console.log("Polygon",event.overlay);*/
-      /*console.log("Polygon:" ,event);*/
-
+     
       var obj = [];
 
       /*SHAPES.push(event.overlay);*/
@@ -526,20 +531,26 @@ function initMap() {
 
       }
 
+      // the calculated Area Unit is in M²
+
     area = computeArea(event.overlay.getPath());
         var infowindow = new google.maps.InfoWindow();
-            infowindow.setContent('<h5>Area</h5><b>'+ area +'m²</b>');
+            infowindow.setContent('<h5>Area</h5><b>'+ area +' m²</b>');
             infowindow.setMap(map);
-            var pos = event.overlay.getPath().getArray().pop();
+
+            infoWindowArr.push(infowindow);
+            var pos = event.overlay.getPath().getArray()[0];
+            
             infowindow.setPosition(pos);
             infowindow.open(map);
+
             event.overlay.addListener('mouseover', function(){
               infowindow.open(map);
             });
              event.overlay.addListener('mouseout', function(){
               infowindow.close();
             });
-    
+
       POLYGONS.push({
         "type": event.type,
         "fillOpacity": event.overlay.fillOpacity,
@@ -558,9 +569,9 @@ function initMap() {
 
 
 
-
+// post the data with ajax post request 
   $("#map-form").on("submit", function (e) {
-    
+    console.log('Saving!!');
     e.preventDefault();
     
     $.ajax({
@@ -575,7 +586,7 @@ function initMap() {
         "projectName":projectName,
         "description":description,
         "infoWindow":infoWindowArr, 
-        'captcha':grecaptcha.getResponse()
+        /*'captcha':grecaptcha.getResponse()*/
       },
 
       success: function (data) {
@@ -594,11 +605,10 @@ function initMap() {
 
       },
       error: function (data) {
+        console.log("error",data);
         $(".loader").fadeOut(400);
-        if(data === 'reCaptcha wrong'){
-          $('#wrong-captcha').html('Try to solve the reCaptcha again!')
-          $('.modal').modal();
-        }
+        $('.modal').modal('open');
+        
         
       }
     });
@@ -662,7 +672,17 @@ function initMap() {
       });
       i++;
     });
-  }());
+  }()); 
+
+
+
+// 
+// 
+// 
+// 
+  // load the map 
+
+  
 
   if (window.location.pathname !== '/dash') {
     
@@ -746,10 +766,11 @@ function initMap() {
           editable:true,
           fillColor:rectangle.fillColor,
           map:map,
-          bounds: new google.maps.LatLngBounds(
-            new google.maps.LatLng(rectangle[i].southWest.lat,rectangle[i].southWest.lng),
-            new google.maps.LatLng(rectangle[i].northEast.lat,rectangle[i].northEast.lng)
-          )
+          bounds:bounds
+          // bounds: new google.maps.LatLngBounds(
+          //   new google.maps.LatLng(rectangle[i].southWest.lat,rectangle[i].southWest.lng),
+          //   new google.maps.LatLng(rectangle[i].northEast.lat,rectangle[i].northEast.lng)
+          // )
         });
         var rectBounds = [
             [rectangle[i].southWest.lat,rectangle[i].southWest.lng],
@@ -923,7 +944,11 @@ function initMap() {
         map.fitBounds(globalBounds);
       }); // $.get
 
-    }); // document ready 
+
+
+    }); // document ready
+
+
 
 
   }
