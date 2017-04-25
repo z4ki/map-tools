@@ -7,12 +7,13 @@ $.ajaxSetup({
 
 /*** Global Variables to store it in the database via ajax **/
 
-
+var infowindowId =0;
 var CIRCLES = [],
   POLYGONS = [],
   RECTANGLES = [],
   SHAPES = [],
   infoWindowArr = [],
+  infoWindows = [],
   deletedOverlays = [],
   deletedInfoWindow = [],
   POLYLINES = [];
@@ -430,15 +431,21 @@ function initMap() {
       });
 
       var cirlceArea = Math.PI * Math.pow(event.overlay.radius, 2);
+      var content = '<h5>Circle Area</h5><b>'+ cirlceArea +'M²</b>'
       var circleInfoWindow = new google.maps.InfoWindow({
-        content:'<h5>Circle Area</h5><b>'+cirlceArea +'M²</b>',
+        content:content,
         position:event.overlay.center,
         map:map
+      });
+      
+      infoWindows.push({
+        "content": content,
+        "position": event.overlay.center
       });
       // circleInfoWindow.setMap(map);
       // circleInfoWindow.open(map);
 
-      infoWindowArr.push(circleInfoWindow);
+      // infoWindowArr.push(circleInfoWindow);
 
       event.overlay.addListener('mouseover',function(e){
         console.log('open');
@@ -453,6 +460,7 @@ function initMap() {
 
 
     } else if (event.type === 'rectangle') {
+
       /*event.overlay.addListener('rightclick',addInfoWindow);*/
       /*console.log("Rectangle path:",event.overlay);*/
       var bounds = event.overlay.getBounds();
@@ -464,20 +472,20 @@ function initMap() {
       
       /*console.log(northEast);
       console.log(center);*/
-
       RECTANGLES.push({
-        "bounds":bounds,
-        /*"northEast":northEast,
-        "southWest":southWest,
-        "southEast":southEast,
-        "northWest":northWest,
-        "center":center,*/
+        // "bounds":bounds,
+        "northEast":{"lat":northEast.lat(),"lng":northEast.lng()},
+        "southWest":{"lat":southWest.lat(),"lng":southWest.lng()},
+        // "southEast":southEast,
+        // "northWest":northWest,
+        "center":[center.lat(),center.lng()],
         "zIndex":event.overlay.zIndex,
         "strokeWeight": event.overlay.strokeWeight,
         "fillColor": event.overlay.fillColor,
         "fillOpacity": event.overlay.fillOpacity,
         "strokeOpacity": event.overlay.strokeOpacity
       });
+      
       
 
       //  the calculated area unit is KM²
@@ -535,7 +543,8 @@ function initMap() {
 
     area = computeArea(event.overlay.getPath());
         var infowindow = new google.maps.InfoWindow();
-            infowindow.setContent('<h5>Area</h5><b>'+ area +' m²</b>');
+        var content = '<h5>Area</h5><b>'+ area +' m²</b>'
+            infowindow.setContent(content);
             infowindow.setMap(map);
 
             infoWindowArr.push(infowindow);
@@ -550,6 +559,11 @@ function initMap() {
              event.overlay.addListener('mouseout', function(){
               infowindow.close();
             });
+
+      infoWindows.push({
+        "content": content,
+        "position": pos
+      });
 
       POLYGONS.push({
         "type": event.type,
@@ -571,9 +585,8 @@ function initMap() {
 
 // post the data with ajax post request 
   $("#map-form").on("submit", function (e) {
-    console.log('Saving!!');
     e.preventDefault();
-    
+    SHAPES = [];
     $.ajax({
       type: 'POST',
       dataType: 'json',
@@ -585,22 +598,19 @@ function initMap() {
         "polylines":POLYLINES,
         "projectName":projectName,
         "description":description,
-        "infoWindow":infoWindowArr, 
+        "infoWindow":infoWindows, 
         /*'captcha':grecaptcha.getResponse()*/
       },
 
       success: function (data) {
-        if(data === 'reCaptcha wrong'){
-          Materialize.toast('Please retry again !', 4000);
-          grecaptcha.reset();
-          $('#wrong-captcha').html('Try to solve the reCaptcha again!')
-          $('.modal').modal('open');
-        }else{
+
+        
+
 
         Materialize.toast('Successfully Saved!', 4000);
         $(".loader").fadeOut(400);
         $("#save-modal").html('Saved!');
-        }
+        
 
 
       },
@@ -705,9 +715,9 @@ function initMap() {
         /*$.map(json, function(el,index){
           arr.push(json);
         });*/
-        arr = $.makeArray(json.circles);
+        /*arr = $.makeArray(json.circles);
         console.log(arr);
-
+*/
 
         /* Converting to array*/
         var circle = $.makeArray(json.circles);
@@ -759,31 +769,30 @@ function initMap() {
 
         }
         /* Draw a Rectangle */
-        
+        // console.log(typeof(rectangle[i].northEast[0]));
         for(var i =0;i<rectangle.length;i++){
-
-        var rectangleShape = new google.maps.Rectangle({
+          console.log(new google.maps.LatLng(rectangle[i].southWest.lat,rectangle[i].southWest.lng));
+        /*var rectangleShape = new google.maps.Rectangle({
           editable:true,
           fillColor:rectangle.fillColor,
           map:map,
-          bounds:bounds
-          // bounds: new google.maps.LatLngBounds(
-          //   new google.maps.LatLng(rectangle[i].southWest.lat,rectangle[i].southWest.lng),
-          //   new google.maps.LatLng(rectangle[i].northEast.lat,rectangle[i].northEast.lng)
-          // )
+          bounds: new google.maps.LatLngBounds(
+            new google.maps.LatLng(rectangle[i].southWest.lat,rectangle[i].southWest.lng),
+            new google.maps.LatLng(rectangle[i].northEast.lat,rectangle[i].northEast.lng)
+          )
         });
         var rectBounds = [
             [rectangle[i].southWest.lat,rectangle[i].southWest.lng],
             [rectangle[i].northEast.lat,rectangle[i].northEast.lng]
         ];
-        updateBounds(rectBounds,'rectangle')
+        updateBounds(rectBounds,'rectangle');
         allShapes.push(rectangleShape);
 
-        /*map.fitBounds(new google.maps.LatLngBounds(
+        map.fitBounds(new google.maps.LatLngBounds(
             new google.maps.LatLng(rectangle[i].southWest.lat,rectangle[i].southWest.lng),
-            new google.maps.LatLng(rectangle[i].northEast.lat,rectangle[i].northEast.lng)));*/
-
-        }
+            new google.maps.LatLng(rectangle[i].northEast.lat,rectangle[i].northEast.lng)));
+*/
+         }
         /* Draw the Circles */
         var c;
 
