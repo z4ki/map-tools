@@ -13,7 +13,7 @@ var CIRCLES = [],
   RECTANGLES = [],
   SHAPES = [],
   infoWindowArr = [],
-  infoWindows = [],
+  infoWindowsGlobal = [],
   deletedOverlays = [],
   deletedInfoWindow = [],
   POLYLINES = [];
@@ -27,7 +27,15 @@ var CIRCLES = [],
 
 
 var fillColor;
-
+function getInfoWindow(id){
+  for(var j=0;j<infoWindowArr.length;j++){
+              if(id === infoWindowArr[j].id){
+                
+                var info = infoWindowArr[j];
+                return info;
+              }
+            }
+}
 
 function computeArea(path){
   var area = google.maps.geometry.spherical.computeArea(path);
@@ -421,6 +429,7 @@ function initMap() {
     if (event.type === 'circle') {
       
       CIRCLES.push({
+        "id":infowindowId,
         "centerLat": event.overlay.center.lat(),
         "centerLng": event.overlay.center.lng(),
         "radius": event.overlay.radius,
@@ -431,16 +440,18 @@ function initMap() {
       });
 
       var cirlceArea = Math.PI * Math.pow(event.overlay.radius, 2);
-      var content = '<h5>Circle Area</h5><b>'+ cirlceArea +'M²</b>'
+      var content = '<h5>Circle Area</h5><b>'+ cirlceArea +'M²</b>';
       var circleInfoWindow = new google.maps.InfoWindow({
+        id:infowindowId,
         content:content,
         position:event.overlay.center,
         map:map
       });
       
-      infoWindows.push({
+      infoWindowsGlobal.push({
+        "id":infowindowId,
         "content": content,
-        "position": event.overlay.center
+        "position": {"lat" :event.overlay.center.lat(), "lng":event.overlay.center.lng()}
       });
       // circleInfoWindow.setMap(map);
       // circleInfoWindow.open(map);
@@ -456,7 +467,7 @@ function initMap() {
         circleInfoWindow.close();
       });
       
-
+      infowindowId++;
 
 
     } else if (event.type === 'rectangle') {
@@ -470,14 +481,10 @@ function initMap() {
       var northWest  = new google.maps.LatLng(bounds.getNorthEast().lat(),bounds.getSouthWest().lng());
       var center = new google.maps.LatLng(bounds.getCenter().lat(),bounds.getCenter().lng());
       
-      /*console.log(northEast);
-      console.log(center);*/
       RECTANGLES.push({
-        // "bounds":bounds,
+        "id":infowindowId,
         "northEast":{"lat":northEast.lat(),"lng":northEast.lng()},
         "southWest":{"lat":southWest.lat(),"lng":southWest.lng()},
-        // "southEast":southEast,
-        // "northWest":northWest,
         "center":[center.lat(),center.lng()],
         "zIndex":event.overlay.zIndex,
         "strokeWeight": event.overlay.strokeWeight,
@@ -492,14 +499,21 @@ function initMap() {
     
       var rectArea =  computeArea([northEast,northWest,southWest,southEast]) /  (1000000) ;
  
-      
+      var content ='<h5>Rectangle Area</h5><b>'+ rectArea + ' Km²</b>';
       var rectangleInfoWindow = new google.maps.InfoWindow({
-        content:'<h5>Rectangle Area</h5><b>'+ rectArea + ' Km²</b>',
+        id:infowindowId,
+        content:content,
         map:map,
         position:center
       }).open(map);
 
+      infoWindowsGlobal.push({
+        "id":infowindowId,
+        "content": content,
+        "position": {"lat" :center.lat(), "lng":center.lng()}
+      });
 
+      infowindowId++;
 
 
     }else if (event.type=== 'polyline'){
@@ -511,6 +525,7 @@ function initMap() {
         latLngs.push(coords[i].lng());
       }
       POLYLINES.push({
+        "id":infowindowId,
         "latLngs":latLngs,
         "zIndex":event.overlay.zIndex
       });
@@ -518,11 +533,17 @@ function initMap() {
       distance = google.maps.geometry.spherical.computeLength(event.overlay.getPath());
 
       var polylineInfoWindow = new google.maps.InfoWindow({
+        id:infowindowId,
         content:'<h5>Distance</h5><b>'+ distance +' meters</b>', 
         map:map,
         position:event.overlay.getPath().getArray()[0]
       }).open(map);
-
+      infoWindowsGlobal.push({
+        "id":infowindowId,
+        "content": content,
+        "position": {"lat" :event.overlay.getPath().getArray()[0].lat(), "lng":event.overlay.getPath().getArray()[0].lng()}
+      });
+      infowindowId++;
 
 
     } else if (event.type === 'polygon') {
@@ -560,12 +581,13 @@ function initMap() {
               infowindow.close();
             });
 
-      infoWindows.push({
+      infoWindowsGlobal.push({
+        "id":infowindowId,
         "content": content,
-        "position": pos
+        "position": {"lat" :pos.lat(), "lng":pos.lng()}
       });
-
       POLYGONS.push({
+        "id":s,
         "type": event.type,
         "fillOpacity": event.overlay.fillOpacity,
         "fillColor": event.overlay.fillColor,
@@ -575,7 +597,7 @@ function initMap() {
         "area": area,
         "zIndex": event.overlay.zIndex
       });
-
+      infowindowId++;
 
         
     }
@@ -587,6 +609,7 @@ function initMap() {
   $("#map-form").on("submit", function (e) {
     e.preventDefault();
     SHAPES = [];
+    console.log(infoWindowsGlobal);
     $.ajax({
       type: 'POST',
       dataType: 'json',
@@ -598,8 +621,7 @@ function initMap() {
         "polylines":POLYLINES,
         "projectName":projectName,
         "description":description,
-        "infoWindow":infoWindows, 
-        /*'captcha':grecaptcha.getResponse()*/
+        "infoWindow":infoWindowsGlobal, 
       },
 
       success: function (data) {
@@ -712,12 +734,7 @@ function initMap() {
         /*var circle  = json.circles["0"];*/
 
         var arr = [];
-        /*$.map(json, function(el,index){
-          arr.push(json);
-        });*/
-        /*arr = $.makeArray(json.circles);
-        console.log(arr);
-*/
+        
 
         /* Converting to array*/
         var circle = $.makeArray(json.circles);
@@ -738,60 +755,62 @@ function initMap() {
 
         /* reload InfoWindows */
 
+        var newInfoWindow = [], marker = [];
         for(var i =0;i<infoWindows.length;i++){
 
-          var newInfoWindow = [], marker = [];
-          var content = '<h5>' + infoWindows[i].title + '</h5><p>' + infoWindows[i].description + '</p>';
-
-          var pos = new google.maps.LatLng(infoWindows[i].latLng.lat,infoWindows[i].latLng.lng);
+          var content = infoWindows[i].content;
+          var pos = new google.maps.LatLng(parseFloat(infoWindows[i].position.lat),parseFloat(infoWindows[i].position.lng));
           newInfoWindow[i] = new google.maps.InfoWindow({
+            id:parseInt(infoWindows[i].id),
             content:content,
-            position:pos
-          });
-          console.log(i);
-          /*newInfoWindow[i].open(map);*/
-          
-          marker[i] = new google.maps.Marker({
             position:pos,
-            map:map
-          });
-          
-          marker[i].addListener('click',function(){
             
-            newInfoWindow[i].open(map);
           });
-          allShapes.push(marker[i]);
-          /*if(!globalBounds){
-            globalBounds = marker[i].getBounds();
-          }else{
-            globalBounds.union(marker[i].getBounds());
-          }*/
+          infoWindowArr.push(newInfoWindow[i]);
+          
+
+          
 
         }
         /* Draw a Rectangle */
         // console.log(typeof(rectangle[i].northEast[0]));
         for(var i =0;i<rectangle.length;i++){
-          console.log(new google.maps.LatLng(rectangle[i].southWest.lat,rectangle[i].southWest.lng));
-        /*var rectangleShape = new google.maps.Rectangle({
-          editable:true,
-          fillColor:rectangle.fillColor,
-          map:map,
-          bounds: new google.maps.LatLngBounds(
-            new google.maps.LatLng(rectangle[i].southWest.lat,rectangle[i].southWest.lng),
-            new google.maps.LatLng(rectangle[i].northEast.lat,rectangle[i].northEast.lng)
-          )
-        });
+          // console.log(parseFloat(rectangle[i].southWest.lat));
+        var rectangleShape = new google.maps.Rectangle({
+                    id:parseInt(rectangle[i].id),
+                    editable:true,
+                    fillColor:rectangle[i].fillColor,
+                    map:map,
+                    bounds: new google.maps.LatLngBounds(
+                      new google.maps.LatLng(parseFloat(rectangle[i].southWest.lat),parseFloat(rectangle[i].southWest.lng)),
+                      new google.maps.LatLng(parseFloat(rectangle[i].northEast.lat),parseFloat(rectangle[i].northEast.lng))
+                    )
+                  });
         var rectBounds = [
-            [rectangle[i].southWest.lat,rectangle[i].southWest.lng],
-            [rectangle[i].northEast.lat,rectangle[i].northEast.lng]
+            [parseFloat(rectangle[i].southWest.lat),parseFloat(rectangle[i].southWest.lng)],
+            [parseFloat(rectangle[i].northEast.lat),parseFloat(rectangle[i].northEast.lng)]
         ];
-        updateBounds(rectBounds,'rectangle');
+
+        rectangleShape.addListener('mouseover',function(){
+            var id = this.id;
+            var info = getInfoWindow(id);
+            info.open(map);
+              
+            });
+        rectangleShape.addListener('mouseout',function(){
+          var id = this.id;
+            var info = getInfoWindow(id);
+                info.close();
+              
+            
+
+        });
+
+        updateBounds(rectangleShape,'rectangle');
         allShapes.push(rectangleShape);
 
-        map.fitBounds(new google.maps.LatLngBounds(
-            new google.maps.LatLng(rectangle[i].southWest.lat,rectangle[i].southWest.lng),
-            new google.maps.LatLng(rectangle[i].northEast.lat,rectangle[i].northEast.lng)));
-*/
+        
+
          }
         /* Draw the Circles */
         var c;
@@ -800,6 +819,7 @@ function initMap() {
 
           c = circle[i];
           var newCircle = new google.maps.Circle({
+            id:parseInt(c.id),
             editable:true,
             fillColor: c.fillColor,
             fillOpacity: c.fillOpacity,
@@ -817,9 +837,44 @@ function initMap() {
 
           allShapes.push(newCircle);
           updateBounds(newCircle,'circle');
+
           newCircle.addListener("radius_changed", function(){
-            alert('need to Calculate the Area of me Circle')
+            // alert("need to Calculate the Area of me Circle" + this.id);
+            var id = this.id;
+            var circle = this;
+            var info = getInfoWindow(id);
+            var cirlceArea = Math.PI * Math.pow(circle.getRadius(), 2);
+      
+                
+                var newContent =  '<h3>Circle Area</h2><b>'+ cirlceArea +'M²</b>';
+                info.setContent(newContent);
+                info.open(map);
+             
           });
+
+          newCircle.addListener("drag",function(){
+            var center = this.getCenter();
+            var id = this.id;
+            var info = getInfoWindow(id);
+            info.setPosition(center);
+          });
+
+            newCircle.addListener("mouseover",function(){
+                var id = this.id;
+                var info = getInfoWindow(id);
+                    info.open(map);
+                 
+              });
+            newCircle.addListener("mouseout",function(){
+                var id = this.id;
+                var info = getInfoWindow(id);
+                    info.close();
+                  
+              });
+
+             /* newCircle.addListener('mouseout',function(){
+                info.close();
+              });*/
 
           
 
@@ -847,6 +902,8 @@ function initMap() {
           
 
           var newPolygon = new google.maps.Polygon({
+            id:p.id,
+            draggable: true,
             editable:true,
             fillColor: p.fillColor,
             fillOpacity: p.fillOpacity,
@@ -856,49 +913,62 @@ function initMap() {
             zIndex: p.zIndex,
             path: path
           });
+          newPolygon.addListener("drag",function(){
+            var id = this.id;
+            var info = getInfoWindow(id);
+            info.setPosition(this.getPath().getArray()[0]);
+          });
+
+          newPolygon.addListener("mouseover",function(){
+                var id = this.id;
+
+                var info = getInfoWindow(parseInt(id));
+                    info.open(map);
+                 
+              });
+            newPolygon.addListener("mouseout",function(){
+                var id = this.id;
+
+                var info = getInfoWindow(parseInt(id));
+                info.close();
+                  
+              });
+          
           updateBounds(path,'polygon');
           allShapes.push(newPolygon);
 
 
-          (function(){
 
-          
-            var infoWindow;
             google.maps.event.addListener(newPolygon.getPath(),'insert_at',function(){
-              if(infoWindow){
-                infoWindow.close();
-              }
+              var id = newPolygon.id;
               var area = computeArea(newPolygon.getPath());
-              infoWindow = new google.maps.InfoWindow({
-                content:'<h5>Area</h5><b>' + area +'m²</b>',
-                position:newPolygon.getPath().getArray()[0],
-               map:map
-              });
+              var info = getInfoWindow(parseInt(id));
+              info.setPosition(newPolygon.getPath().getArray()[0]);
+              info.setContent("<h5>Polygon Area</h5><b>" + area +"m²<b>");
             });
+
             google.maps.event.addListener(newPolygon.getPath(),'set_at',function(){
-              if(infoWindow){
-                infoWindow.close();
-              }
+              
+              var id = newPolygon.id;
               var area = computeArea(newPolygon.getPath());
-              infoWindow = new google.maps.InfoWindow({
-                content:'<h5>Area</h5><b>' + area +'m²</b>',
-                position:newPolygon.getPath().getArray()[0],
-                map:map
-                
-              });
+              var info = getInfoWindow(parseInt(id));
+              info.setPosition(newPolygon.getPath().getArray()[0]);
+              info.setContent("<h3>Polygon Area</h3><b>" + area +"m²<b>");
+              
             });
-          }());
+          
 
         }
-        /* Draw the Rectangles*/
+        //  Function to fit the bounds of the map 
+        // extends all points from all the shapes drown 
         
         console.log("All Shapes ",allShapes);
         
         function updateBounds(shape, type){
 
-          if(type === 'circle'){
+          if(type === 'circle' || type === 'rectangle'){
 
-            console.log(shape);
+            
             points = new google.maps.LatLng(shape.getBounds().getNorthEast().lat(),shape.getBounds().getNorthEast().lng());
             globalBounds.extend(points);
 
@@ -907,10 +977,8 @@ function initMap() {
             
 
           }else if(type === 'polygon'){
-            /*console.log(shape);
-            var paths;
-            paths = shape.getPath();*/
-            console.log(shape);
+            
+            
 
             for(var j=0;j<shape.length;j++){
               
@@ -919,37 +987,10 @@ function initMap() {
 
           }
 
-        }else if (type === 'rectangle'){
-            var j=0;
-            while(j < 2){
-              points = new google.maps.LatLng(shape[j][0],shape[j][1]);
-              globalBounds.extend(points);
-            }
-          }
+        }
+        
       }
 
-        /*for(var i = 0; i < allShapes.length  ;i++){
-        
-          
-          if(allShapes[i].getCenter()){
-            points = new google.maps.LatLng(allShapes[i].getBounds().getNorthEast().lat(),allShapes[i].getBounds().getNorthEast().lng());
-            globalBounds.extend(points);
-
-            points = new google.maps.LatLng(allShapes[i].getBounds().getSouthWest().lat(),allShapes[i].getBounds().getSouthWest().lng());
-            globalBounds.extend(points);
-            console.log(globalBounds);
-
-          }else if(allShapes[i].getPath()){
-            var paths;
-            paths = allShapes[i].getPath();
-
-            for(var j=0;j<paths.length;j++){
-              points = new google.maps.LatLng(allShapes[i].getAt[j].lat(),allShapes[i].getAt[j].lng());
-              globalBounds.extend(points);
-            }
-          }
-        
-        }*/
         map.fitBounds(globalBounds);
       }); // $.get
 
