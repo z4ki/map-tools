@@ -1,4 +1,4 @@
-<?php
+    <?php
 
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
@@ -19,6 +19,8 @@ class CreateMapsTable extends Migration
             $table->increments('id');
                 $table->integer('user_id');
                 $table->longText('map');
+                $table->string('state');
+                $table->string('screenshot');
                 $table->string('project_name');
                 $table->string('description');
                 $table->timestamps();

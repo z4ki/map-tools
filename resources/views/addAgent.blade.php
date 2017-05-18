@@ -9,17 +9,20 @@
 		<form class="col s8" method="post" action="/register">
           {{ csrf_field()}}
               <div class="row">
-              <h3 class="pink-text"><i class="material-icons"><h3><b>add</b></h3></i><b>Add New Agent</b></h3>
+              <h3 class="pink-text"><i class="material-icons"><h3><b>person_add</b></h3></i><b>&nbsp;Add New Agent</b></h3>
                 <div class="input-field col s12">
+                  <i class="material-icons prefix">account_circle</i>
                   <input id="first_name" type="text" class="validate black-text" name="first_name" required>
                   <label for="name">First Name</label>
                 </div>
 
                 <div class="input-field col s12 ">
+                  <i class="material-icons prefix">account_circle</i>
                   <input id="last_name" type="text" name="last_name" class="validate black-text">
                   <label for="last_name">Last Name</label>
                 </div>
                 <div class="input-field col s6">
+                  <i class="material-icons prefix">email</i>
                   <input id="email" type="email" class="validate black-text"  name="email" required>
                   <label for="email"  name="email">Email</label>
                 </div>
@@ -43,6 +46,7 @@
               </div>
               <div class="row">
                 <div class="input-field col s6">
+                  <i class="material-icons prefix">enhanced_encryption</i>
                   <input id="password"  name="password" type="password" class="validate black-text" required>
                   <label for="password" name="password" >Password</label>
                 </div>

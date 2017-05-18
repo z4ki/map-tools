@@ -12,6 +12,7 @@ Route::get('/dash',function(){
   return view('dashboard');
 
 })->middleware('auth');
+Route::get('/maps','MapController@getPublicMaps');
 
 Route::get('/addAgent',function(){
 
@@ -30,6 +31,12 @@ Route::post('/dash/store','MapController@storeMap')->middleware('auth');
 
 
 Route::get('/projects',function(){
+
+	return view('projects');
+
+})->middleware('auth');
+
+Route::get('/Departement',function(){
 
 	return view('projects');
 
@@ -62,6 +69,8 @@ Route::get('/admin','AuthController@addAdmin');
 
 Route::get('/search/{string}','MapController@search');
 
+Route::get('/users/search/{string}','AuthController@searchUsers');
+
 
 Route::get('/show/users','AuthController@showUsers');
 
@@ -69,3 +78,16 @@ Route::get('/show/users','AuthController@showUsers');
 Route::get('/profile', function(){
 	return view('profile');
 });
+
+Route::post('/map/delete/{id}','MapController@deleteMap');
+Route::post('/users/delete/{id}','AuthController@deleteUser');
+
+Route::get('/get','AuthController@get');
+
+Route::get('/Departement/show','MapController@showSubProjects');
+
+Route::post('/profile/edit/{id}','AuthController@editeProfile');
+Route::get('/profile/edit/{id}','AuthController@getProfile');
+Route::get('/map/show/{id}','MapController@getMap');
+
+

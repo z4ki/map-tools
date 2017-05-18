@@ -1,5 +1,8 @@
 @extends('layout/dashboard_layout') @section('content')
 <style>
+#modal-btn {
+   margin-top: 25px!important;
+}
    .h-button a {
    margin-left: 5px!important;
    }
@@ -66,15 +69,17 @@
    #wrong-captcha {
    margin-top: -15px!important;
    }
+
+
    /* for Spinner */
    .loader {
    margin-left: 5px;
    margin-right: 2px;
    display: inline-flex;
    border: 5px solid #fff;
-   /* Light grey */
+   
    border-top: 5px solid #000;
-   /* Blue */
+  
    border-radius: 50%;
    width: 20px;
    height: 20px;
@@ -88,6 +93,68 @@
    transform: rotate(360deg);
    }
    }
+
+    /*This is just to center the spinner*/
+
+/*html, body { height: 100%; }
+
+body {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+}*/
+
+ /*Here is where the magic happens*/
+/*
+.spinner {
+  animation: rotator 1.4s linear infinite;
+}
+
+@keyframes rotator {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(270deg);
+  }
+}
+.path {
+  stroke-dasharray: 187;
+  stroke-dashoffset: 0;
+  transform-origin: center;
+  animation: dash 1.4s ease-in-out infinite, colors 5.6s ease-in-out infinite;
+}
+
+@keyframes colors {
+  0% {
+    stroke: #fff;
+  }
+  25% {
+    stroke: #fff;
+  }
+  50% {
+    stroke: #fff;
+  }
+  75% {
+    stroke: #fff;
+  }
+  100% {
+    stroke: #fff;
+  }
+}
+@keyframes dash {
+  0% {
+    stroke-dashoffset: 187;
+  }
+  50% {
+    stroke-dashoffset: 46.75;
+    transform: rotate(135deg);
+  }
+  100% {
+    stroke-dashoffset: 187;
+    transform: rotate(450deg);
+  }
+}*/
 </style>
 <div class="section">
    <div id="search-box" class="input-field  white col s6 ">
@@ -128,6 +195,9 @@
          <a href="#" id="undo" class="btn white darken-2 right" style="z-index:1000;">
          <i class="material-icons black-text">undo</i>
          </a>
+         <a href="#" id="screenshot" class="btn white darken-2 right" style="z-index:1000;">
+         <i class="material-icons black-text">screen_share</i>
+         </a>
       </div>
    </div>
 </form>
@@ -143,51 +213,112 @@
             <div class="input-field col s12 ">
                <textarea id="description" class="materialize-textarea"></textarea>
                <label for="description">Description</label>
-               <a href="#" id="modal-btn" class="modal-action modal-close waves-effect waves-green btn right">Done!</a>
+               <div class="row">
+                  <div class="input-field col s6">
+                   <select id="state">
+                     <option  value="Public">Public</option>
+                     <option  value="Private">Private</option>
+                   </select>
+                 </div>
+               <a href="#" id="modal-btn" class="modal-action modal-close waves-effect waves-green btn right col ">Done!</a>
+               </div>
             </div>
+            
          </div>
       </div>
    </div>
 </div>
-<!-- Dropdown Structure -->
-<!-- <ul id="dropdown1 " class="dropdown-content ">
-   <li><a href="#! ">PDF</a></li>
-   <li><a href="#! ">PNG</a></li>
-   <li><a href="#! ">XML</a></li>
-</ul> -->
-<!-- <div id="h-bar ">
-   <a href="# " id="polyline " class="btn white darken-2 " style="z-index:1000; ">
-   <span class="black-text ">Lines</span>
-   </a>
-   <a href="# " id="polygon " class="btn white darken-2 " style="z-index:1000; ">
-   <span class="black-text ">Polygon</span>
-   </a>
-   <a href="# " id="rectangle " class="btn white darken-2 " style="z-index:1000; ">
-   <span class="black-text ">Rectangle</span>
-   </a>
-   <a href="# " id="circle " class="btn white darken-2 " style="z-index:1000; ">
-   <span class="black-text ">Circle</span>
-   </a>
-   <a href="# " id="clear " class="btn white darken-2 " style="z-index:1000; ">
-   <span class="black-text ">clear</span>
-   </a>
-   
-   </div> -->
+
 <script 
    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUX7u8kULgOdFAz-_iJbKb-o0miLfEbb4&libraries=drawing,places,geometry&callback=initMap"
    async defer></script>
+<script type="text/javascript" src="/js/html2canvas.js "></script>
 <script type="text/javascript " src="/js/mapster.js "></script>
 
 <script type="text/javascript ">
+function ajaxSaving(){
+    $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            url: '/dash/store',
+            data: {
+                "screenshot":img,
+                "circles": CIRCLES,
+                "polygons": POLYGONS,
+                "rectangles": RECTANGLES,
+                "polylines": POLYLINES,
+                "projectName": projectName,
+                "description": description,
+                "state":$("#state").val(),
+                "infoWindow": infoWindowArr,
+            },
+
+            success: function(data) {
+                if (data === 'reCaptcha wrong') {
+                    Materialize.toast('Please retry again !', 4000);
+                    $('.modal').modal('open');
+                } else {
+
+                    Materialize.toast('Successfully Saved!', 4000);
+                    $(".loader").fadeOut(400);
+                    $("#save-modal").html('Saved!');
+                    // var json = JSON.stringify(CIRCLES);
+                    // var uri = encodeURIComponent(json);
+                    // console.log(uri);
+                    // var link = "data:json/plain;charset=utf-8," + uri;
+                    // console.log(link);
+
+                    // // var jj = uri.toDataUrl("text/plain")
+                    // window.open(link,"_blank");
+                }
+
+
+            },
+            error: function(data) {
+                console.log("error", data);
+                $(".loader").fadeOut(400);
+                if (data === 'reCaptcha wrong') {
+                    $('#wrong-captcha').html('Try to solve the reCaptcha again!');
+                    grecaptcha().reset();
+                    $('.modal').modal('open');
+                }
+
+            }
+        });
+}
    $(document).ready(function(){
+      
        $('.modal').modal();
+       $(document).ready(function() {
+       $('select').material_select();
+     });
      });
 
   
    
    var projectName;
    var description;
+   var img;
+function takeScreenshot(){
+   html2canvas( $("#map") , {
+        // allowTaint:true,
+        logging: false,
+        useCORS: true,
+        onrendered: function (canvas) {
 
+            img = canvas.toDataURL("image/jpeg");
+            ajaxSaving();
+            
+
+         }
+     });
+}
+
+   $("#screenshot").on('click',function(){
+
+      takeScreenshot();
+
+   });
    
    $("#modal-btn").on('click',function(){
 
@@ -196,7 +327,13 @@
      description = $('#description').val();
      
      var spinner = '<div class="loader "></div>';
+
+     // var spinner = '<svg class="spinner" width="35px" height="35px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">'+
+     // +'<circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>'
+     // +'</svg>';
      $('#save-modal').append(spinner);
+
+     
      $('#map-form').trigger('submit');
    
    });

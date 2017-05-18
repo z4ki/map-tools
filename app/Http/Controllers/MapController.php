@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Map;
 use App\User;
+use App\Manager;
+use App\Agent;
+
 class MapController extends AuthController
 {
     //
@@ -17,19 +20,30 @@ class MapController extends AuthController
 		
 		
 
-			$data =  $request->all();
+			// $data =  $request->except(['projectName','description','state','screenshot']);
+			$img = str_replace('data:image/jpeg;base64,', '', $request->screenshot);
+			$img = str_replace(' ', '+', $img);
+			$photo = base64_decode($img);
+			 
+			$filename = time() . '.' . 'jpeg';
 			
-			/*$data->rectangles = $request->rectangles;
-			data*/
+			$path = public_path() . "\storage\mapScreenshot\\" . $filename;
+
+			 file_put_contents($path, $photo);
+			
+			
 			
 
 
 			Map::create([
 				'user_id' => auth()->id(),
-				'map' => json_encode($data),
+				'map' => json_encode($request->except(['projectName','description','state','screenshot'])),
 				'project_name' => $request->projectName,
-				'description'  => $request->description
+				'description'  => $request->description,
+				'state' =>$request->state,
+				'screenshot' =>$filename
 				]);
+			// dd($data);
 
 		return response()->json("Saved!!");
 	
@@ -37,17 +51,38 @@ class MapController extends AuthController
 }
 
 }
-	/* Show user  projects*/
+//  Show the manager sub agents projects
 
+public function showSubProjects(Request $request){
+	$man = Manager::where('user_id',auth()->id())->get()->first();
+	 		$i = 0;
+			$projects  = new \Illuminate\Database\Eloquent\Collection;
+		 	foreach($man->myAgents as $agent){
+		 		// $users[$i] = User::find($agent->user_id);
+				$map[$i] = \App\Map::where('user_id',$agent->user_id)->get();
+				if($map[$i]->isNotEmpty()){
+		 		$projects = $projects->merge($map[$i]);
+				}
+				$i++;
+		 		
+		 	}
+		 	$map[$i] = Map::where('user_id',auth()->id())->get();
+		 	if($map[$i]->isNotEmpty()){
+		 		$projects = $projects->merge($map[$i]);
+				}
+			return response()->json($projects);
+
+}
+
+	/* Show user  projects*/
 public function showProjects(Request $request){
 	
 
 
 	if($request->ajax()){
-		$map = Map::where('user_id',auth()->user()->id)->get();
 	
-	return response()->json($map);
-		
+		$map = Map::where('user_id',auth()->user()->id)->get();
+		return response()->json($map);
 	}
 }
 	/*Show the Selected Map*/
@@ -74,6 +109,7 @@ public function search($string){
 			/*$users = User::where('supervisor_id',auth()->user()->id)->get();
 			dd($users);*/
 			$projectName =  Map::where("project_name" ,'like',  $string . '%')
+						->orWhere("description",'like','%' . $string .'%')
 						->where('user_id',auth()->user()->id)
 						->get();
 		
@@ -87,6 +123,39 @@ public function search($string){
 		}
 	
 }
+
+
+
+public function deleteMap(Request $request,$id){
+	if($request->ajax() && $request->isMethod('post')){
+		Map::find($id)->delete();
+		return response()->json('deleted');
+	}
+}
+
+
+public function getPublicMaps(Request $request){
+	
+
+		$maps = Map::where('state','Public')->get();
+		
+		
+		return view('maps',compact('maps'));
+
+	
+}
+
+public function getMap(Request $request,$id){
+		if($request->ajax()){
+			$map  = Map::where('id',$id)
+				->where('state', 'Public');
+
+				dd($map);
+
+		}else{
+			return view('showMap');
+		}
+	}
 
 
 }

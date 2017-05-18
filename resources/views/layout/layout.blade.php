@@ -14,14 +14,6 @@
   <body>
     @include('layout.nav')
 
-<!-- Font-family : Montserrat -->
-<!-- #5a5a5a -->
-<!-- <div class="parallax-container" >
-  <div class="parallax">
-    <img src="/img/GoogleMap-5.jpg" alt="Google Map">
-  </div>
-</div> -->
-
 
 
 
@@ -48,6 +40,8 @@
               });
 
           </script>
+
+          @yield('scripts')
 
   </body>
 </html>

@@ -10,6 +10,14 @@
     <link rel="stylesheet" href="/css/materialize.min.css">
     <script type="text/javascript" src="/js/jquery-2.1.1.min.js"></script>
     <script src="/js/materialize.js"></script>
+
+    <script type="text/javascript">
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+    </script>
     <style type="text/css">
         #search-box {
             height: 3rem!important;
@@ -72,18 +80,25 @@
             </li>
             <div class="list-items">
                 <li id="home" class=""><a href="/dash"><i class="material-icons" >home</i>Map</a></li>
-
-                <li id="new-agent"><a href="/addAgent"><i class="material-icons">person_add</i>New Agent</a></li>
-                <!--  <li><div class="divider"></div></li>
-                      <li><a class="subheader">My Account</a></li> -->
                 <li id="latest-projects"><a class="waves-effect" href="/projects"><i class="material-icons">gesture</i>Latest Projects</a></li>
-                <li id="my-projects">
-                    <a href="/pro"><i class="material-icons">work</i><!-- <span class="badge white-text text-darken-4">10</span> -->Departement Projects</a>
+                @if(Auth::user()->type == 'manager' || Auth::user()->type == 'admin')
+                <li id="departement-projects">
+                    <a href="/Departement">
+                    <i class="material-icons">work</i>
+                    <!-- <span class="badge white-text text-darken-4">10</span> -->
+                    Departement Projects
+                    </a>
                 </li>
+                <li id="new-agent"><a href="/addAgent"><i class="material-icons">person_add</i>New Agent</a></li>
+                
+                @endif
+                @if(Auth::user()->type == 'manager' || Auth::user()->type == 'admin')
+
                 <li id="users">
                     <a class="waves-effect" href="/show/users"><i class="material-icons">person</i>Users</a>
 
                 </li>
+                @endif
                 <li id="settings">
                     <a class="waves-effect" href="/settings"><i class="material-icons">settings</i>Settings</a>
 
@@ -97,7 +112,7 @@
         </ul>
        
 
-        <div class=" " style="margin-left:350px;margin-right:50px;">
+        <div id="container " style="margin-left:350px;margin-right:50px;">
 
             @yield('content')
 

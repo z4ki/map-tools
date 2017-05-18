@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
-use App\Plan;
+use App\Manager;
+use App\Agent;
+
+
 use Intervention\Image\ImageManagerStatic as Image;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
@@ -26,7 +29,7 @@ class AuthController extends Controller
     	$admin->email = 'z4ki.xy@gmail.com';
     	$admin->password = bcrypt('mad');
     	$admin->type = 'admin';
-    	$admin->supervisor_id =0;
+    	// $admin->supervisor_id =0;
     	$admin->save();
     	
     }
@@ -61,7 +64,37 @@ class AuthController extends Controller
 		return redirect()->back();
 	}
 
+	//  edit sub users profile 
 
+	public function editeProfile(Request $request,$id){
+
+			$user = User::find($id);
+			$user->first_name = $request->first_name;
+			$user->last_name = $request->last_name;
+			$user->email = $request->email;
+
+			if($request->password){
+				
+				$user->password = $request->password;
+			}
+			if($request->hasFile('avatar')){
+			
+			$filename = time() . '.' . $request->avatar->extension();
+			$request->avatar->storeAs('public/avatars/',"$filename");
+			
+			$user->avatar = $filename;
+			
+		}
+			$user->save();
+			return back();
+		
+
+	}
+
+	public function getProfile($id){
+		$user = User::find($id);
+			return view('profile',compact('user'));
+	}
 
 		/* Update User Profile */
 
@@ -80,7 +113,7 @@ class AuthController extends Controller
 		if($request->hasFile('avatar')){
 			
 			$filename = time() . '.' . $request->avatar->extension();
-			$request->avatar->storeAs('public/avatars/',"$filename");
+			$request->avatar->storeAs('public/avatars/',$filename);
 			
 			$user->avatar = $filename;
 			
@@ -94,15 +127,6 @@ class AuthController extends Controller
 	/* Add new Agent or Manager */
 
 	public function registerNewAgent(Request $request){
-		
-
-		
-		
-			/*if($request->ajax()){
-*/
-				/*$result = $this->validateCaptcha($request->captcha);*/
-
-				/*if($result['success'] == 1){*/
         
 						$validator = \Validator::make($request->all(),
 							['first_name' => 'required',
@@ -139,17 +163,25 @@ class AuthController extends Controller
 						'last_name' => $request->last_name,
 						'email' => $request->email,
 						'password' => bcrypt($request->password),
-						'type' => $type,
-						'supervisor_id' => auth()->id()
+						'type' => $type
 						]);
+
+					if($type == 'manager'){
+						$manager = new Manager;
+						$manager->user_id = $user->id;
+						$manager->save();
+					}else if($type == 'agent'){
+						$manager = Manager::where('user_id',auth()->id());
+						$agent = new Agent;
+						$agent->manager_id = $manager->id;
+						$agent->user_id = $user->id;
+						$agent->save();
+					}
 
 					$msg = "New " . $type ." has been added!";
 					session()->flash('message', $msg );
 					return redirect('/addAgent');
-			    /*}else{
-			    	return response()->json('reCaptcha');
-			    }*/
-		/*}*/
+			    
 				}
 
 		}
@@ -163,16 +195,55 @@ class AuthController extends Controller
 				$users = User::all();
 				return response()->json($users);
 			}else{
+				$manager = Manager::where('user_id',auth()->id())->get()->first();
+				$i = 0;
+				foreach($manager->myAgents as $agent){
+			 		$users[$i] = User::find($agent->user_id);
+			 		$i++;
+			 	}
+			 	// dd(collect($users));
 
-				$users = User::where('supervisor_id','=' ,auth()->id())->get();
-				return response()->json($users);
+
+				return response()->json(collect($users));
+				
+
+				
 			}
 		}else{
 			return view('users');
 		}
 	}
 	 
-	 
+	 // public function get(){
+	 // 	$man = Manager::where('user_id',7)->get()->first();
+	 // 	$i = 0;
+	 // 	$projects  = new \Illuminate\Database\Eloquent\Collection;
+	 // 	foreach($man->myAgents as $agent){
+	 // 		// $users[$i] = User::find($agent->user_id);
+		// 	$map[$i] = \App\Map::where('user_id',$agent->user_id)->get();
+		// 	echo $map[$i];
+	 // 		$projects = $projects->merge($map[$i]);
+		// 	$i++;
+	 		
+	 // 	}
+	 // 	$map[$i] = \App\Map::where('user_id',auth()->id())->get();
+		// $projects = $projects->merge($map[$i]);
+
+	 // 	dd($projects);
+	 // 	// $map =  \App\Map::where('user_id',auth()->id())->get();
+	 // 	// dd($map);
+	 	
+	 // }
+
+
+
+	 public function searchUsers($string){
+		$users = User::where('first_name','like' , $string.'%')
+						->orWhere('last_name','like' , $string.'%')
+						->get();
+		return response()->json($users);
+	}
+
 
 
 }

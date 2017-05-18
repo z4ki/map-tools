@@ -1,7 +1,7 @@
 <nav >
  <div class="nav-wrapper">
 
-   <a href="#" class="brand-logo"><i class="material-icons">polymer</i>Map Tools</a>
+   <a href="/" class="brand-logo"><i class="material-icons">polymer</i>Map Tools</a>
 
    <ul id="nav-mobile" class="right hide-on-med-and-down">
 
@@ -15,8 +15,10 @@
       </div>
     </li>
 
-     <li><a class="activated" href="#">Home</a></li>
-     <li><a href="#">Tools</a></li>
+     <li><a class="activated" href="/">Home</a></li>
+     <li><a id="tools" href="#">Tools</a></li>
+     <li><a id="maps" href="/maps">Maps</a></li>
+
      @if(Auth::check())
      <li><a href="/dash">{{Auth::user()->first_name}}</a></li>
      <li><a href="/logout">Logout</a></li>
