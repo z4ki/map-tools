@@ -23,8 +23,7 @@
 		              <th data-field="firstname">First Name</th>
 		              <th data-field="lastname">Last Name</th>
 		              <th data-field="email">email</th>
-		              <th data-field="type">type
-		              </th>
+		              <th data-field="type">type</th>
 
 		              <th data-field="created_at">Created at</th>
 

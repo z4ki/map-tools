@@ -380,6 +380,7 @@ function initMap() {
 
     //  global variable for the computeLength and ComputeArea
     var distance, area;
+    var rectangleLatlngs  = [];
 
     google.maps.event.addListener(drawingManager, 'overlaycomplete', function(event) {
 
@@ -429,13 +430,18 @@ function initMap() {
 
             /*console.log(northEast);
             console.log(center);*/
+            rectangleLatlngs.push(northEast.lat());
+            rectangleLatlngs.push(northEast.lng());
+            rectangleLatlngs.push(southWest.lat());
+            rectangleLatlngs.push(southWest.lng());
 
             RECTANGLES.push({
-                // "northEast":northEast,
-                // "southWest":southWest,
-                // "southEast":southEast,
-                // "northWest":northWest,
+                // "northEast":[northEast.lat(),northEast.lng()],
+                // "southWest":[southWest.lat(),southWest.lng()],
+                // "southEast":[southEast.lat(),southEast.lng()],
+                // "northWest":[northWest.lat(),northWest.lng()],
                 // "center":center,
+                "latLng":rectangleLatlngs,
                 "zIndex": event.overlay.zIndex,
                 "strokeWeight": event.overlay.strokeWeight,
                 "fillColor": event.overlay.fillColor,
@@ -551,61 +557,7 @@ function initMap() {
     /***********************/
     /** Color palette js **/
 
-    (function() {
-        $("#btn").on('click', function() {
-            $('#v-bar').show();
-        });
-        var palette = [
-            "#f44336",
-            "#e91e63",
-            "#9c27b0",
-            "#2196f3",
-            "#03a9f4",
-            "#009688",
-            "#4caf50",
-            "#cddc39",
-            "#ff5722",
-            "#795548",
-            "#607d8b"
-        ];
-
-
-        var i = 0;
-        var bar = $('.color');
-        /*console.log(bar);*/
-        $(".color").each(function() {
-
-            $(this).css("background-color", palette[i]);
-            $(this).attr("id", palette[i]);
-
-
-            $(this).on("click", function() {
-                fillColor = $(this).attr("id");
-
-                drawingManager.setOptions({
-                    circleOptions: {
-                        fillOpacity: 1,
-                        fillColor: fillColor
-                    },
-                    polygonOptions: {
-                        fillOpacity: 1,
-                        fillColor: fillColor
-                    },
-                    polylineOptions: {
-                        fillOpacity: 1,
-                        fillColor: fillColor
-                    },
-                    rectangleOptions: {
-                        fillOpacity: 1,
-                        fillColor: fillColor
-                    }
-                });
-
-
-            });
-            i++;
-        });
-    }());
+    
 
 
 
@@ -626,12 +578,12 @@ function initMap() {
                     console.log(json);
                     /*var circle  = json.circles["0"];*/
 
-                    var arr = [];
+                    // var arr = [];
                     /*$.map(json, function(el,index){
                       arr.push(json);
                     });*/
-                    arr = $.makeArray(json.circles);
-                    console.log(arr);
+                    // arr = $.makeArray(json.circles);
+                    // console.log(arr);
 
 
                     /* Converting to array*/
@@ -639,6 +591,7 @@ function initMap() {
                     var polygon = $.makeArray(json.polygons);
                     var polyline = $.makeArray(json.polylines);
                     var rectangle = $.makeArray(json.rectangles);
+                    // var rectangle = json.rectangles;
                     var infoWindows = $.makeArray(json.infoWindow);
 
                     console.log("circle", circle);
@@ -693,8 +646,8 @@ function initMap() {
                             fillColor: rectangle.fillColor,
                             map: map,
                             bounds: new google.maps.LatLngBounds(
-                                new google.maps.LatLng(rectangle[i].southWest.lat, rectangle[i].southWest.lng),
-                                new google.maps.LatLng(rectangle[i].northEast.lat, rectangle[i].northEast.lng)
+                                new google.maps.LatLng(parseFloat(rectangle[i].latLng[2]), parseFloat(rectangle[i].latLng[3])),
+                                new google.maps.LatLng(parseFloat(rectangle[i].latLng[0]), parseFloat(rectangle[i].latLng[1]))
                             )
                         });
                         var rectBounds = [
@@ -704,9 +657,7 @@ function initMap() {
                         updateBounds(rectBounds, 'rectangle')
                         allShapes.push(rectangleShape);
 
-                        /*map.fitBounds(new google.maps.LatLngBounds(
-                            new google.maps.LatLng(rectangle[i].southWest.lat,rectangle[i].southWest.lng),
-                            new google.maps.LatLng(rectangle[i].northEast.lat,rectangle[i].northEast.lng)));*/
+                        
 
                     }
                     /* Draw the Circles */

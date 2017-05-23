@@ -30,11 +30,7 @@ Route::get('/settings',function(){
 Route::post('/dash/store','MapController@storeMap')->middleware('auth');
 
 
-Route::get('/projects',function(){
-
-	return view('projects');
-
-})->middleware('auth');
+Route::get('/projects','MapController@showProjects')->middleware('auth');
 
 Route::get('/Departement',function(){
 
@@ -64,15 +60,15 @@ Route::get('/logout','AuthController@destroy')->middleware('auth');
 Route::post('/register' ,'AuthController@registerNewAgent')->middleware('auth');
 
 
-Route::get('/admin','AuthController@addAdmin');
+Route::get('/admin','AuthController@addAdmin')->middleware('auth');
 
 
-Route::get('/search/{string}','MapController@search');
+Route::get('/search/{string}','MapController@search')->middleware('auth');
 
-Route::get('/users/search/{string}','AuthController@searchUsers');
+Route::get('/users/search/{string}','AuthController@searchUsers')->middleware('auth');
 
 
-Route::get('/show/users','AuthController@showUsers');
+Route::get('/show/users','AuthController@showUsers')->middleware('auth');
 
 
 Route::get('/profile', function(){

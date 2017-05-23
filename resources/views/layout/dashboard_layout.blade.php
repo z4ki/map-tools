@@ -79,6 +79,7 @@
                 </div>
             </li>
             <div class="list-items">
+                <li id="home" class=""><a href="/"><i class="material-icons" >home</i>Home</a></li>
                 <li id="home" class=""><a href="/dash"><i class="material-icons" >home</i>Map</a></li>
                 <li id="latest-projects"><a class="waves-effect" href="/projects"><i class="material-icons">gesture</i>Latest Projects</a></li>
                 @if(Auth::user()->type == 'manager' || Auth::user()->type == 'admin')

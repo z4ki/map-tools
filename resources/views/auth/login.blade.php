@@ -72,8 +72,8 @@
          </form>
        </div>
      </div>
-     <a href="/#register">Create account</a>
-     <br>
+     <!-- <a href="/#register">Create account</a> -->
+     <!-- <br> -->
      <a href="/">Return Home</a>
       @include('errors')
    </center>

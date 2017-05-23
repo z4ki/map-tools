@@ -2,6 +2,11 @@
 
 @section('content')
 <style type="text/css">
+/*.pagination li.active a {
+    color: #fff;
+    background-color: #ee6e73!important;
+}
+*/
   .breadcrumb:before {
     content: '\E5CC';
     color:#7696f3!important;
@@ -48,13 +53,44 @@
         </thead>
 
         <tbody>
-         
-         
-          
-                  </tbody>
-      </table>
+            @foreach($maps as $map)
 
-      <img class="materialboxed" width="650" src="/storage/mapScreenshot/1494883431.jpeg">
+            <tr id="">
+                  <td id="name">{{ $map->project_name}}</td>
+                  <td id="description">{{ $map->description}} </td>
+                  <td id="created_at">{{ $map->created_at}} </td>
+                  <td id="updated_at">{{ $map->updated_at}} </td>
+                  <td>
+                  <a href="#modal1">
+                  <span class="new badge red" data-badge-caption="delete" id="delete" data-id= "{{$map->id}} "></span>
+                  </a>
+                  <a href="#"><span id="edit" data-screenshot="{{$map->screenshot}}" class="new badge yellow" data-badge-caption="edit"></span></a>
+                  <a href="projects/show/{{$map->id}}" id="view"><span  class="new badge" data-badge-caption="view"></span></a>
+                 </td>
+             </tr>
+            @endforeach
+        </tbody>
+      </table>
+      <div class="row">
+      <div class="center-align">
+      {{ $maps->links()}}
+        
+      </div>
+     </div>
+<!-- Modal Trigger -->
+  <!-- <a class="waves-effect waves-light btn" href="#modal1">Modal</a> -->
+
+  <!-- Modal Structure -->
+  <div id="modal1" class="modal col s4">
+    <div class="modal-content">
+      <h4>Confirmation</h4>
+      <p>Do you really want to delete this map.</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" id="no" class="modal-action modal-close waves-effect waves-green btn-flat">No</a>
+      <a href="#!" id="yes" class="modal-action modal-close waves-effect waves-green btn-flat">Yes</a>
+    </div>
+  </div>
 </div>
 
 <script type="text/javascript">
@@ -62,11 +98,15 @@
 
 $('title').html('All Projects');
 $(document).ready(function(){
+  $('.modal').modal();
 $(document).on('click',function(e){
     console.log(e);
   if(e.target.id === 'delete'){
     
     var id = e.target.dataset.id;
+
+    $("#yes").on('click',function(){
+
     $.ajax({
     type: 'POST',
     url: '/map/delete/' + id,
@@ -84,13 +124,19 @@ $(document).on('click',function(e){
 
     }
     });
+    });
+
+    $("#no").on('click',function(){
+
+      $('#modal1').modal('close');
+    });
 
   }else if(e.target.id  ==='edit'){
 
     var screenshot = e.target.dataset.screenshot;
     var src = "/storage/mapScreenshot/"+ screenshot;
    
-    $('#MyProjects').append("<img class='materialboxed' width='650' src='" + src + "'>");
+    // $('#MyProjects').append("<img class='materialboxed' width='650' src='" + src + "'>");
 
 
 
@@ -100,7 +146,7 @@ $(document).on('click',function(e){
   
 
     var pathname = window.location.pathname;
-    $('.active').removeClass();
+    $('#slide-out .active').removeClass();
 
     if(pathname === '/Departement'){
     $('title').html('Departement Projects');
@@ -118,11 +164,11 @@ $(document).on('click',function(e){
 
       var table =  '<tr id="'+  data[i].id+  '">'+
                   '<td id="name">'+ data[i].project_name + '</td>'+
-                  '<td id="created_at">'+data[i].description+'</td>'+
+                  '<td id="description">'+data[i].description+'</td>'+
                   '<td id="created_at">'+data[i].created_at+'</td>'+
                   '<td id="updated_at">'+data[i].updated_at+'</td>'+
                   '<td>'+
-                  '<a href="#"><span class="new badge red" data-badge-caption="delete" id="delete" data-id="'+  data[i].id+  '"></span></a>'+
+                  '<a href="#modal1"><span class="new badge red" data-badge-caption="delete" id="delete" data-id="'+  data[i].id+  '"></span></a>'+
                   '<a href="#"><span id="edit" data-screenshot="'+  data[i].screenshot+  '" class="new badge yellow" data-badge-caption="edit"></span></a>'+
                   '<a href="projects/show/'+ data[i].id+  '"id="view"><span  class="new badge" data-badge-caption="view"></span></a>'+
                   '</td></tr>';
@@ -136,12 +182,12 @@ $(document).on('click',function(e){
     }
 
 
-    $.get(pathname + "/show",function(data){
+    // $.get(pathname + "/show",function(data){
       
-      populateTable(data);
+    //   populateTable(data);
       
 
-    });
+    // });
 
     $('#searchbar').focusin(function(){
   
@@ -152,6 +198,7 @@ $(document).on('click',function(e){
             window.location.origin +'/search/' + $('#searchbar').val() ,
             function(data){
               $("tbody").html('');
+              $('.pagination').html('');
               populateTable(data);
               
             }

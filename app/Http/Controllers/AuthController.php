@@ -192,7 +192,7 @@ class AuthController extends Controller
 	public function showUsers(Request $request){
 		if($request->ajax()){
 			if(auth()->user()->type == 'admin'){
-				$users = User::all();
+				$users = User::all(); 
 				return response()->json($users);
 			}else{
 				$manager = Manager::where('user_id',auth()->id())->get()->first();

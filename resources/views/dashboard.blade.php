@@ -179,6 +179,7 @@ body {
             <li class="color z-depth-1"></li>
             <li class="color z-depth-1"></li>
          </ul>
+         
       </div>
       <!-- Dropdown Trigger -->
       <!-- <a class="dropdown-button btn right " style="margin-right:115px;" href="#" data-activates="dropdown1">Save as</a> -->
@@ -198,6 +199,11 @@ body {
          <a href="#" id="screenshot" class="btn white darken-2 right" style="z-index:1000;">
          <i class="material-icons black-text">screen_share</i>
          </a>
+         <form action="#">
+          <p class="range-field col s5">
+            <input type="range" id="test5" min="0" max="1.0" step="0.1" value="0.3" />
+          </p>
+        </form>
       </div>
    </div>
 </form>
@@ -229,11 +235,11 @@ body {
    </div>
 </div>
 
-<script 
-   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUX7u8kULgOdFAz-_iJbKb-o0miLfEbb4&libraries=drawing,places,geometry&callback=initMap"
+    <script 
+   src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCUX7u8kULgOdFAz-_iJbKb-o0miLfEbb4&language=fr-fr&libraries=drawing,places,geometry&callback=initMap"
    async defer></script>
 <script type="text/javascript" src="/js/html2canvas.js "></script>
-<script type="text/javascript " src="/js/mapster.js "></script>
+<script type="text/javascript " src="/js/mapster2.js "></script>
 
 <script type="text/javascript ">
 function ajaxSaving(){
@@ -243,6 +249,7 @@ function ajaxSaving(){
             url: '/dash/store',
             data: {
                 "screenshot":img,
+                "markers":MARKER,
                 "circles": CIRCLES,
                 "polygons": POLYGONS,
                 "rectangles": RECTANGLES,
@@ -250,7 +257,7 @@ function ajaxSaving(){
                 "projectName": projectName,
                 "description": description,
                 "state":$("#state").val(),
-                "infoWindow": infoWindowArr,
+                "infoWindow": infoWindowsGlobal,
             },
 
             success: function(data) {
@@ -307,6 +314,8 @@ function takeScreenshot(){
         onrendered: function (canvas) {
 
             img = canvas.toDataURL("image/jpeg");
+            SHAPES = [];
+            infoWindowArr = [];
             ajaxSaving();
             
 
@@ -340,6 +349,7 @@ function takeScreenshot(){
    
    // $('.active').removeClass();
    $('#home').addClass('active');
+   
    
 </script>
 @endsection

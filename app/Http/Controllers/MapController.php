@@ -79,11 +79,12 @@ public function showProjects(Request $request){
 	
 
 
-	if($request->ajax()){
+	// if($request->ajax()){
 	
-		$map = Map::where('user_id',auth()->user()->id)->get();
-		return response()->json($map);
-	}
+		$maps = Map::where('user_id',auth()->user()->id)->paginate(10);
+		return view('projects',compact('maps'));
+		// return response()->json($map);
+	// }
 }
 	/*Show the Selected Map*/
 public function showMap($id,Request $request){
@@ -137,7 +138,7 @@ public function deleteMap(Request $request,$id){
 public function getPublicMaps(Request $request){
 	
 
-		$maps = Map::where('state','Public')->get();
+		$maps = Map::where('state','Public')->paginate(6);
 		
 		
 		return view('maps',compact('maps'));
@@ -148,9 +149,9 @@ public function getPublicMaps(Request $request){
 public function getMap(Request $request,$id){
 		if($request->ajax()){
 			$map  = Map::where('id',$id)
-				->where('state', 'Public');
+				->where('state', 'Public')->get();
 
-				dd($map);
+			return response()->json($map);
 
 		}else{
 			return view('showMap');

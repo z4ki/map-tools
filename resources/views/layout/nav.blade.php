@@ -8,10 +8,7 @@
 
     <li>
       <div class="box left-align col m12">
-        <div class="container-1">
-            <span class="icon"><i class="material-icons">search</i></span>
-            <input type="search" id="search" placeholder="Search..." autocomplete="off"/>
-        </div>
+        <!--   -->
       </div>
     </li>
 
