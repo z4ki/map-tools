@@ -197,7 +197,7 @@ body {
          <i class="material-icons black-text">undo</i>
          </a>
          <a href="#" id="screenshot" class="btn white darken-2 right" style="z-index:1000;">
-         <i class="material-icons black-text">screen_share</i>
+         <i class="material-icons black-text">perm_media</i>
          </a>
          <form action="#">
           <p class="range-field col s5">
@@ -348,7 +348,7 @@ function takeScreenshot(){
    });
    
    // $('.active').removeClass();
-   $('#home').addClass('active');
+   $('#map-item').addClass('active');
    
    
 </script>

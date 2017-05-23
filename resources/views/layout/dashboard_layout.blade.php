@@ -80,12 +80,12 @@
             </li>
             <div class="list-items">
                 <li id="home" class=""><a href="/"><i class="material-icons" >home</i>Home</a></li>
-                <li id="home" class=""><a href="/dash"><i class="material-icons" >home</i>Map</a></li>
-                <li id="latest-projects"><a class="waves-effect" href="/projects"><i class="material-icons">gesture</i>Latest Projects</a></li>
+                <li id="map-item" class=""><a href="/dash"><i class="material-icons" >gesture</i>Map</a></li>
+                <li id="latest-projects"><a class="waves-effect" href="/projects"><i class="material-icons">list</i>Latest Projects</a></li>
                 @if(Auth::user()->type == 'manager' || Auth::user()->type == 'admin')
                 <li id="departement-projects">
                     <a href="/Departement">
-                    <i class="material-icons">work</i>
+                    <i class="material-icons">location_city</i>
                     <!-- <span class="badge white-text text-darken-4">10</span> -->
                     Departement Projects
                     </a>
@@ -96,7 +96,7 @@
                 @if(Auth::user()->type == 'manager' || Auth::user()->type == 'admin')
 
                 <li id="users">
-                    <a class="waves-effect" href="/show/users"><i class="material-icons">person</i>Users</a>
+                    <a class="waves-effect" href="/show/users"><i class="material-icons">supervisor_account</i>Users</a>
 
                 </li>
                 @endif

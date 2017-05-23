@@ -704,8 +704,6 @@ function initMap() {
           var content;
           var markerInfoWindow;
           $('#infowindow-btn').on('click', function() {
-
-
               var title = $('#title-iw').val();
               var description = $('#textarea-iw').val();
               content = '<h5>' + title + '</h5><p>' + description + '</p>';
@@ -727,6 +725,7 @@ function initMap() {
                     "lng": event.overlay.position.lng()
                 }
             });
+              
             });
 
           event.overlay.addListener('click',function(){
